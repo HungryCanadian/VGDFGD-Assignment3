@@ -68,6 +68,38 @@ void displayShopInventory();
 void displayPlayerInventory();
 void runShop();
 
+struct Room {
+    string name;
+    string description;
+    vector<string> exits; // Names of rooms that can be accessed
+    void (*action)(); // Pointer to function for room-specific actions
+
+    Room(const string& roomName, const string& roomDesc, const vector<string>& roomExits, void (*roomAction)())
+        : name(roomName), description(roomDesc), exits(roomExits), action(roomAction) {}
+};
+
+
+
+
+
+void exploreTown();
+
+void visitGeneralStore() {
+    cout << "\nWelcome to the General Store!\n";
+    displayShopInventory(); // Show items for sale
+    runShop(); // Allow purchasing or selling
+}
+
+void visitBlacksmith() {
+    // Logic for blacksmith
+}
+
+Room generalStore("General Store", "\nYou see shelves filled with various supplies.", { "Blacksmith", "Town Square" }, visitGeneralStore);
+Room blacksmith("Blacksmith", "\nYou smell hot metal and see tools everywhere.", { "General Store", "Town Square" }, visitBlacksmith);
+Room townSquare("Town Square", "\nThe bustling center of the town, with paths leading to various shops.", { "General Store", "Blacksmith" }, nullptr);
+
+vector<Room> rooms = { generalStore, blacksmith, townSquare };
+
 void SetColor(int textColor)
 {
     cout << "\033[" << textColor << "m";
@@ -181,8 +213,6 @@ vector<Race> races = {
     { "Tiefling", 0, 0, 0, 1, 0, 2}
 };
 
-Character playerCharacter("", Race("", 0, 0, 0, 0, 0, 0), Class("", 0), abilityScores(0, 0, 0, 0, 0, 0));
-
 
 vector<string> raceFlavorText = {
 "Dwarves are stout and hardy. +2 con\n",
@@ -294,6 +324,7 @@ int main()
     SetColor(31);
     cout << "'Have a good day!'";
     ResetColor();
+    exploreTown();
 
     return 0;
 }
@@ -572,6 +603,44 @@ void createCharacter() {
     }
     else {
         createCharacter(); // Recursively call to create a new character
+    }
+}
+void exploreTown() {
+    string currentRoom = "Town Square"; // Start at the town square
+    while (true) {
+        // Find the current room
+        auto roomIt = std::find_if(rooms.begin(), rooms.end(), [&](const Room& room) {
+            return room.name == currentRoom;
+            });
+
+        if (roomIt != rooms.end()) {
+            cout << roomIt->description << endl; // Describe the current room
+            cout << "Exits: \n";
+            for (size_t i = 0; i < roomIt->exits.size(); ++i) {
+                cout << "[" << (i + 1) << "] " << roomIt->exits[i] << endl; // Numbered exits
+            }
+            cout << "[0] Exit Town\n"; // Option to exit town
+
+            cout << "Where would you like to go? (Enter the number): ";
+            int choice;
+            cin >> choice;
+
+            // Handle exiting
+            if (choice == 0) {
+                break; // Exit the loop
+            }
+
+            // Check if the choice is valid
+            if (choice > 0 && choice <= roomIt->exits.size()) {
+                currentRoom = roomIt->exits[choice - 1]; // Move to the chosen room
+                if (roomIt->action) {
+                    roomIt->action(); // Call the room's specific action if it exists
+                }
+            }
+            else {
+                cout << "You can't go there!\n";
+            }
+        }
     }
 }
 
