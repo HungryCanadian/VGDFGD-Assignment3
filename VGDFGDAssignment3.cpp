@@ -30,6 +30,7 @@ int calculateBonus(int score) {
 }
 
 int gold = 150;
+string characterName;
 string intent = "";
 string input = "";
 string newItem = "";
@@ -156,7 +157,7 @@ public:
     }
 };
 
-
+bool skipDelays = false; // Global variable to track delay preference
 
 abilityScores generateRandomScores() {
     return abilityScores(
@@ -168,6 +169,7 @@ abilityScores generateRandomScores() {
         std::rand() % 11 + 8   // Charisma
     );
 }
+void createCharacter();
 
 // Races
 vector<Race> races = {
@@ -178,6 +180,9 @@ vector<Race> races = {
     { "Gnome", 0, 0, 0, 2, 0, 0},
     { "Tiefling", 0, 0, 0, 1, 0, 2}
 };
+
+Character playerCharacter("", Race("", 0, 0, 0, 0, 0, 0), Class("", 0), abilityScores(0, 0, 0, 0, 0, 0));
+
 
 vector<string> raceFlavorText = {
 "Dwarves are stout and hardy. +2 con\n",
@@ -208,90 +213,67 @@ vector<Class> charClass = {
     { "Ranger", 10 }
 };
 
-int delay(int milliseconds) {
-    clock_t goal = milliseconds + clock();
-    while (goal > clock());
-    return 1;
+void delay(int milliseconds) {
+    if (!skipDelays) {
+        clock_t goal = milliseconds + clock();
+        while (goal > clock());
+
+    }
 }
 
 
 int main()
 {
 
-    while (true) {
-        system("cls");
-        cout << "World of Caspira\n\n";
-        cout << "Welcome to the world of Caspira, Let's get your new character made!\n";
-        string characterName;
-        while (true) {
-            cout << "Enter your character's name (1-10 characters): ";
-            cin >> characterName;
+     system("cls");
+     cout << "The Vanishing Vessels of Caspira!\n";
+     cout << "Would you like to skip the story? (y/n): ";
+     char skipChoice;
+     cin >> skipChoice;
+     skipDelays = (skipChoice == 'y' || skipChoice == 'Y');
+     delay(3 * 1000);
+     cout << "In the shimmering waters of the Caspiran archipelago,\n";
+     delay(3 * 1000);
+     cout << "The islands, known for their lush forests and masterful shipbuilders,\n";
+     delay(3 * 1000);
+     cout << "thrived on exports of fine lumber and swift sailing ships.\n";
+     delay(3 * 1000);
+     cout << "Yet, a dark cloud loomed over the vibrant trade routes;\n";
+     delay(3 * 1000);
+     cout << "vessels laden with precious cargo had begun to vanish without a trace.\n\n";
+     delay(3 * 1000); 
+     delay(3 * 1000);
+     cout << "The people of Caspira grew anxious.\n";
+     delay(3 * 1000);
+     cout << "Whispers of curses and sea spirits filled the air as merchants and sailors traded tales of the lost ships.\n";
+     delay(3 * 1000);
+     cout << "One night, as the village gathered by the flickering lanterns,\n";
+     delay(3 * 1000);
+     cout << "an elderly sailor recounted a haunting legend a specter known as the Wraith of the Waves,\n";
+     delay(3 * 1000);
+     cout << "said to haunt the waters, claiming ships that dared to leave with timber from the sacred Heartwood Grove.\n\n";
+     delay(3 * 1000);
+     delay(3 * 1000);
+     cout << "Amidst the crowd, a newcomer emerged. With eyes like stormy seas and a unyielding spirit,\n";
+     delay(3 * 1000);
+     cout << "they had journeyed to Caspira seeking adventure. Hearing the villagers' plight,\n";
+     delay(3 * 1000);
+     cout << "they felt a calling to uncover the truth behind the disappearances.\n";
+     delay(3 * 1000);
+     cout << "they gathered there courage, determined to face whatever lay beneath the waves.\n";
+     delay(3 * 1000);
+     cout << "\nLet's get a bit more information on our Hero!\n\n";
 
-            if (characterName.empty() || characterName.length() > 10) {
-                cout << "Invalid name. Name must be between 1 and 10 characters.\n";
-            }
-            else {
-                break; // Valid name, exit the loop
-            }
-        }
+        createCharacter(); // Call the character creation function
 
 
-        // Choose a race
-        while (true) {
-            cout << "Races:\n[1]Dwarf\n[2]Elf\n[3]Halfling\n[4]Human\n[5]Gnome\n[6]Tiefling\n\n";
-            cout << "Please choose a Race (1-" << races.size() << "): ";
-            cin >> chosenRace;
 
-            if (chosenRace < 1 || chosenRace > races.size()) {
-                cout << "Invalid choice. Please try again.\n";
-            }
-            else {
-                chosenRace--; // Adjust for zero being #1
-                cout << "\n" << raceFlavorText[chosenRace] << "\n"; // Display flavor text
-                break; // Valid choice, exit the loop
-            }
-        }
-
-        // Choose a class
-        while (true) {
-            cout << "Classes:\n[1]Fighter\n[2]Paladin\n[3]Druid\n[4]Warlock\n[5]Sorceror\n[6]Wizard\n[7]Ranger\n\n";
-            cout << "Please choose a Class (1-" << charClass.size() << "): ";
-            cin >> chosenClass;
-
-            if (chosenClass < 1 || chosenClass > charClass.size()) {
-                cout << "Invalid choice. Please try again.\n";
-            }
-            else {
-                chosenClass--; // Adjust for zero
-                cout << "\n" << classFlavorText[chosenClass] << "\n"; // Display flavor text
-                break; // Valid choice, exit the loop
-            }
-        }
-
-        std::srand(static_cast<unsigned int>(std::time(0)));
-        abilityScores playerScores = generateRandomScores();
-
-        // Create character
-        Character playerCharacter(characterName, races[chosenRace], charClass[chosenClass], playerScores);
-
-        cout << "\n";
-        playerCharacter.displayStats();
-
-        // Ask if they want to create another character
-        cout << "\nAre you happy with this Hero? (y/n): ";
-        char continueChoice;
-        cin >> continueChoice;
-
-        if (continueChoice != 'n' && continueChoice != 'N') {
-            break; // Exit the loop
-        }
-    }
-    cout << "Now hero, let's start your adventure!\n";
-    system("cls");
+  
+    cout << "Now " << characterName << ", let's start your adventure!\n\n";
     
-    cout << "You awake slowly and groggily, how much did you drink last night?\nYou look around the tiny room you had acquired for the night and see all your belongings are still there\n";
+    cout << "You awake slowly and groggily, how much did you drink last night?\n\nYou look around the tiny room you had acquired for the night and see all your belongings are still there\n";
     delay(2 * 1000);
-    cout << "You get up slowly and get your things together";
+    cout << "You get up slowly and gather your things\n";
     delay(1 * 1000);
     displayPlayerInventory();
     delay(5 * 1000);
@@ -524,3 +506,72 @@ void runShop() {
         }
     }
 }
+
+void createCharacter() {
+    while (true) {
+        cout << "Enter your character's name (1-10 characters): ";
+        cin >> characterName;
+
+        if (characterName.empty() || characterName.length() > 10) {
+            cout << "Invalid name. Name must be between 1 and 10 characters.\n";
+        }
+        else {
+            break; // Valid name, exit the loop
+        }
+    } 
+    cout << characterName << " Pleased to meet you! now what are you?\n\n";
+
+    // Choose a race
+    while (true) {
+        cout << "Races:\n[1]Dwarf\n[2]Elf\n[3]Halfling\n[4]Human\n[5]Gnome\n[6]Tiefling\n\n";
+        cout << "Please choose a Race (1-" << races.size() << "): ";
+        cin >> chosenRace;
+
+        if (chosenRace < 1 || chosenRace > races.size()) {
+            cout << "Invalid choice. Please try again.\n";
+        }
+        else {
+            chosenRace--; // Adjust for zero being #1
+            cout << "\n" << raceFlavorText[chosenRace] << "\n"; // Display flavor text
+            break; // Valid choice, exit the loop
+        }
+    }
+
+    // Choose a class
+    while (true) {
+        cout << "Classes:\n[1]Fighter\n[2]Paladin\n[3]Druid\n[4]Warlock\n[5]Sorcerer\n[6]Wizard\n[7]Ranger\n\n";
+        cout << "Please choose a Class (1-" << charClass.size() << "): ";
+        cin >> chosenClass;
+
+        if (chosenClass < 1 || chosenClass > charClass.size()) {
+            cout << "Invalid choice. Please try again.\n";
+        }
+        else {
+            chosenClass--; // Adjust for zero
+            cout << "\n" << classFlavorText[chosenClass] << "\n"; // Display flavor text
+            break; // Valid choice, exit the loop
+        }
+    }
+
+    std::srand(static_cast<unsigned int>(std::time(0)));
+    abilityScores playerScores = generateRandomScores();
+
+    // Create character
+    Character playerCharacter(characterName, races[chosenRace], charClass[chosenClass], playerScores);
+
+    cout << "\n";
+    playerCharacter.displayStats();
+
+    // Ask if they want to create another character
+    cout << "\nAre you happy with this Hero? (y/n): ";
+    char continueChoice;
+    cin >> continueChoice;
+
+    if (continueChoice != 'n' && continueChoice != 'N') {
+        return; // Exit the function
+    }
+    else {
+        createCharacter(); // Recursively call to create a new character
+    }
+}
+
