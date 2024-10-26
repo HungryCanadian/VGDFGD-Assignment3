@@ -9,6 +9,13 @@
 #include <limits>
 #include <ctime>
 
+#include "Rooms.h"
+#include "AbilityScores.h"
+#include "Character.h"
+#include "Class.h"
+#include "Enemy.h"
+#include "Race.h"
+
 using std::cout;
 using std::cin;
 using std::string;
@@ -68,16 +75,22 @@ int purchaseItem(const string& input);
 void displayShopInventory();
 void displayPlayerInventory();
 void runShop();
+// Choose a name for the character
+string characterName = "Aric";
 
-struct Room {
-    string name;
-    string description;
-    vector<string> exits; // Names of rooms that can be accessed
-    void (*action)(); // Pointer to function for room-specific actions
+// Select race and class (for example)
+Race selectedRace = races[1]; // Selecting "Elf"
+Class selectedClass = charClass[0]; // Selecting "Fighter"
 
-    Room(const string& roomName, const string& roomDesc, const vector<string>& roomExits, void (*roomAction)())
-        : name(roomName), description(roomDesc), exits(roomExits), action(roomAction) {}
-};
+// Example ability scores (randomly assigned or predefined)
+abilityScores initialScores(15, 12, 14, 10, 8, 11); // Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma
+
+// Create the player character
+Character player(characterName, selectedRace, selectedClass, initialScores);
+
+// Display player stats to confirm initialization
+
+// Create a blank player character
 
 void SetColor(int textColor)
 {
@@ -86,190 +99,18 @@ void SetColor(int textColor)
 
 void ResetColor() { cout << "\033[0m"; }
 
-// Struct for races
-struct abilityScores {
-    int strength;
-    int dexterity;
-    int constitution;
-    int intelligence;
-    int wisdom;
-    int charisma;
+//Race myRace("Human", 1, 1, 0, 0, 0, 0); // Example race with bonuses
+//Class myClass("Fighter", 10);           // Example class with default health
+//abilityScores myScores(10, 10, 10, 10, 10, 10); // Example ability scores
+//
+//// Create an instance of Character
+//Character player("Hero", myRace, myClass, myScores);
 
-    abilityScores(int str, int dex, int con, int intl, int wis, int cha)
-        : strength(str), dexterity(dex), constitution(con), intelligence(intl), wisdom(wis), charisma(cha) {}
 
-    // Method to apply racial bonuses
-    void applyRaceBonuses(const abilityScores& raceBonus) {
-        strength += raceBonus.strength;
-        dexterity += raceBonus.dexterity;
-        constitution += raceBonus.constitution;
-        intelligence += raceBonus.intelligence;
-        wisdom += raceBonus.wisdom;
-        charisma += raceBonus.charisma;
-    }
 
-};
-struct Class {
-    string name;
-    int defaultHealth;
 
-    Class(const string& className, int health)
-        : name(className), defaultHealth(health) {}
-};
-struct Race {
-    string name;
-    abilityScores abilityIncrease;
 
-    Race(const string& raceName, int strBonus, int dexBonus, int conBonus, int intlBonus, int wisBonus, int chaBonus)
-        : name(raceName), abilityIncrease(strBonus, dexBonus, conBonus, intlBonus, wisBonus, chaBonus) {}
-};
-class Character {
-public:
-    string mName;
-    Race mRace;
-    Class mType;
-    abilityScores mBaseScores;
-    abilityScores mBonuses; 
-    int mHealth;
-    int mDamage;
-
-    // Constructor
-    Character(const string& characterName, const Race& characterRace, const Class& characterClass, const abilityScores& scores)
-        : mName(characterName), mRace(characterRace), mType(characterClass), mBaseScores(scores), mBonuses(0, 0, 0, 0, 0, 0) {
-        mBaseScores.applyRaceBonuses(mRace.abilityIncrease);
-        calculateBonuses();
-        calculateHealth();
-    }
-
-    void calculateBonuses() {
-        mBonuses.strength = calculateBonus(mBaseScores.strength);
-        mBonuses.dexterity = calculateBonus(mBaseScores.dexterity);
-        mBonuses.constitution = calculateBonus(mBaseScores.constitution);
-        mBonuses.intelligence = calculateBonus(mBaseScores.intelligence);
-        mBonuses.wisdom = calculateBonus(mBaseScores.wisdom);
-        mBonuses.charisma = calculateBonus(mBaseScores.charisma);
-    }
-
-    void calculateHealth() {
-        int constitutionModifier = mBonuses.constitution;
-        mHealth = mType.defaultHealth + constitutionModifier; // Set health based on class default
-    }
-
-    void takeDamage(int damage) {
-        mHealth -= damage;
-        if (mHealth < 0) mHealth = 0;
-    }
-
-    bool isAlive() const {
-        return mHealth > 0;
-    }
-
-    int attack() const {
-        return rand() % (mBonuses.strength + 1); // Example attack damage calculation
-    }
-
-    // Getter for the player's name
-    string getName() const {
-        return mName;
-    }
-
-    // Getter for the player's health
-    int getHealth() {
-        return mHealth;
-    }
-
-    // Getter for the player's attack damage (using inherited method)
-    int getAttack() const {
-        return mDamage;
-    }
-
-    /*void Attack() const {
-        cout << "Your attack inflicts " << mDamage + mBonuses.strength << " damage.";
-
-    }*/
-
-    void displayStats() const {
-        cout << "Character: " << mName << "\n";
-        cout << "Race: " << mRace.name << "\n";
-        cout << "Class: " << mType.name << "\n";
-        cout << "Hitpoints: " << mHealth << "\n";
-        cout << "Ability Scores:\n";
-        cout << "Strength: " << mBaseScores.strength << " (+" << mBonuses.strength << ")\n";
-        cout << "Dexterity: " << mBaseScores.dexterity << " (+" << mBonuses.dexterity << ")\n";
-        cout << "Constitution: " << mBaseScores.constitution << " (+" << mBonuses.constitution << ")\n";
-        cout << "Intelligence: " << mBaseScores.intelligence << " (+" << mBonuses.intelligence << ")\n";
-        cout << "Wisdom: " << mBaseScores.wisdom << " (+" << mBonuses.wisdom << ")\n";
-        cout << "Charisma: " << mBaseScores.charisma << " (+" << mBonuses.charisma << ")\n";
-    }
-};
-void combat(Character& playerCharacter, Enemy& enemy);
-Character& playerCharacter;
-class Enemy {
-protected:
-    string mName;
-    int mDamage;
-    int mHealth;
-public:
-    Enemy(const string& name, int damage = 1, int health = 10)
-        : mName(name), mDamage(damage), mHealth(health) {}
-
-    void Attack() const {
-        cout << "Attack inflicts " << mDamage << " damage.";
-
-    }
-    void Taunt() const {
-        cout << "The enemy taunts, making you target them!\n";
-    }
-    void takeDamage(int damage) {
-        mHealth -= damage;
-        if (mHealth < 0) {
-            mHealth = 0; // Ensure health does not go below zero
-        }
-        cout << mName << " takes " << damage << " damage! Remaining health: " << mHealth << endl;
-    }
-
-    bool isAlive() const {
-        return mHealth >= 0;
-    }
-
-    // Getter for the enemy's name
-    string getName() const {
-        return mName;
-    }
-
-    // Getter for the enemy's health
-    int getHealth() {
-        return mHealth;
-    }
-
-    // Getter for the enemy's attack damage (using inherited method)
-    int getAttack() const {
-        return mDamage;
-    }
-};
-void exploreTown();
-
-void visitGeneralStore() {
-    cout << "\nWelcome to the General Store!\n";
-    displayShopInventory(); // Show items for sale
-    runShop(); // Allow purchasing or selling
-}
-
-void visitBlacksmith() {
-    // Logic for blacksmith
-}
-void visitOutskirts() {
-    // Logic for outskirts
-    Enemy goblin("Goblin", 5, 30);
-    combat(playerCharacter, goblin);
-}
-
-Room generalStore("General Store", "\nYou see shelves filled with various supplies.", { "Blacksmith", "Town Square" }, visitGeneralStore);
-Room blacksmith("Blacksmith", "\nYou smell hot metal and see tools everywhere.", { "General Store", "Town Square" }, visitBlacksmith);
-Room outskirts("Outskirts", "\nThe town behind you and long flowing grassland in front of you..", { "Town Square" }, visitOutskirts);
-Room townSquare("Town Square", "\nThe bustling center of the town, with paths leading to various shops.", { "Outskirts", "General Store", "Blacksmith" }, nullptr);
-
-vector<Room> rooms = { generalStore, blacksmith, townSquare, outskirts, };
+void combat(Character& player, Enemy& enemy);
 
 
 bool skipDelays = false; // Global variable to track delay preference
@@ -284,6 +125,7 @@ abilityScores generateRandomScores() {
         std::rand() % 11 + 8   // Charisma
     );
 }
+
 Character createCharacter();
 
 // Races
@@ -386,12 +228,12 @@ int main()
      delay(3 * 1000);
      cout << "\nLet's get a bit more information on our Hero!\n\n";
 
-     Character playerCharacter = createCharacter();
+     Character player = createCharacter();
 
 
 
   
-    cout << "Now " << playerCharacter.getName() << ", let's start your adventure!\n\n";
+    cout << "Now " << player.getName() << ", let's start your adventure!\n\n";
     
     cout << "You awake slowly and groggily, how much did you drink last night?\n\nYou look around the tiny room you had acquired for the night and see all your belongings are still there\n";
     delay(2 * 1000);
@@ -686,10 +528,10 @@ Character createCharacter() {
     abilityScores playerScores = generateRandomScores();
 
     // Create character
-    Character playerCharacter(characterName, races[chosenRace], charClass[chosenClass], playerScores);
+    Character player(characterName, races[chosenRace], charClass[chosenClass], playerScores);
 
     cout << "\n";
-    playerCharacter.displayStats();
+    player.displayStats();
 
     // Ask if they want to create another character
     cout << "\nAre you happy with this Hero? (y/n): ";
@@ -697,13 +539,14 @@ Character createCharacter() {
     cin >> continueChoice;
 
     if (continueChoice != 'n' && continueChoice != 'N') {
-        return playerCharacter; // Return the created character
+        return player; // Return the created character
     }
     else {
         // Create a new character without recursion
         return createCharacter(); // Call the function again to create a new character
     }
 }
+
 void exploreTown() {
     string currentRoom = "Town Square"; // Start at the town square
     while (true) {
@@ -743,26 +586,75 @@ void exploreTown() {
     }
 }
 
-void combat(Character& playerCharacter, Enemy& enemy) {
-    while (playerCharacter.isAlive() && enemy.isAlive()) {
-        // Player's turn
-        int damageToEnemy = rand() % playerCharacter.getAttack() + 1;
-        enemy.takeDamage(damageToEnemy);
-        cout << playerCharacter.getName() << " attacks " << enemy.getName() << " for " << damageToEnemy << " damage!" << std::endl;
-        cout << enemy.getName() << " has " << enemy.getHealth() << " health left." << std::endl;
+void combat(Character& player, Enemy& enemy) {
+    bool inCombat = true;
 
-        if (!enemy.isAlive()) {
-            std::cout << enemy.getName() << " has been defeated!" << std::endl;
-            break;
+    while (inCombat && player.isAlive() && enemy.isAlive()) {
+        std::cout << "\nChoose an action:\n";
+        std::cout << "[1] Attack\n";
+        std::cout << "[2] Defend\n";
+        std::cout << "[3] Use Item\n";
+        std::cout << "[4] Run\n";
+
+        int choice;
+        std::cin >> choice;
+
+        switch (choice) {
+        case 1: // Attack
+        {
+            int damageToEnemy = player.attack();
+            enemy.takeDamage(damageToEnemy);
+            std::cout << player.getName() << " attacks " << enemy.getName() << " for " << damageToEnemy << " damage!" << std::endl;
+            if (!enemy.isAlive()) {
+                std::cout << enemy.getName() << " has been defeated!" << std::endl;
+                break; // Exit combat
+            }
+        }
+        break;
+
+        case 2: // Defend
+        {
+            std::cout << player.getName() << " defends this turn!" << std::endl;
+            // Implement defense logic (e.g., reduce damage from the next attack)
+            continue; // Skip enemy's turn if defending
+        }
+        break;
+
+        case 3: // Use Item
+        {
+            std::cout << "Using an item is not implemented yet.\n"; // Placeholder
+            // You can implement inventory management here.
+        }
+        break;
+
+        case 4: // Run
+        {
+            std::cout << player.getName() << " attempts to run away!" << std::endl;
+            if (rand() % 2 == 0) { // 50% chance to escape
+                std::cout << player.getName() << " successfully escaped!" << std::endl;
+                inCombat = false; // Exit combat
+            }
+            else {
+                std::cout << "Failed to escape!" << std::endl;
+            }
+        }
+        break;
+
+        default:
+            std::cout << "Invalid choice! Please choose again.\n";
+            continue; // Restart the loop
         }
 
-        // Enemy's turn
-        int damageToPlayer = rand() % enemy.getAttack() + 1;
-        playerCharacter.takeDamage(damageToPlayer);
-        cout << enemy.getName() << " attacks " << playerCharacter.getName() << " for " << damageToPlayer << " damage!" << std::endl;
-        cout << playerCharacter.getName() << " has " << playerCharacter.getHealth() << " health left." << std::endl;
-        if (!playerCharacter.isAlive()) {
-            cout << playerCharacter.getName() << " has been defeated!" << std::endl;
+        // Enemy's turn (if combat continues)
+        if (inCombat && enemy.isAlive()) {
+            int damageToPlayer = enemy.getAttack();
+            player.takeDamage(damageToPlayer);
+            std::cout << enemy.getName() << " attacks " << player.getName() << " for " << damageToPlayer << " damage!" << std::endl;
+
+            if (!player.isAlive()) {
+                std::cout << player.getName() << " has been defeated!" << std::endl;
+                inCombat = false; // Exit combat
+            }
         }
     }
 }
