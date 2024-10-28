@@ -1,5 +1,7 @@
 #include "AbilityScores.h"
 
+
+
 // Constructor implementation
 abilityScores::abilityScores(int str, int dex, int con, int intl, int wis, int cha)
     : strength(str), dexterity(dex), constitution(con), intelligence(intl), wisdom(wis), charisma(cha) {}

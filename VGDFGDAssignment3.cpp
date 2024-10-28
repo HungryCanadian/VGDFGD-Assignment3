@@ -15,6 +15,8 @@
 #include "Class.h"
 #include "Enemy.h"
 #include "Race.h"
+#include "Item.h"
+#include "Equipment.h"
 
 using std::cout;
 using std::cin;
@@ -43,11 +45,6 @@ string intent = "";
 string input = "";
 string newItem = "";
 
-struct Item {
-    string name;
-    int price;
-    int quantity;
-};
 
 vector<Item> items = {
     { "sword", 15, 1 },
@@ -75,18 +72,18 @@ int purchaseItem(const string& input);
 void displayShopInventory();
 void displayPlayerInventory();
 void runShop();
-// Choose a name for the character
-string characterName = "Aric";
-
-// Select race and class (for example)
-Race selectedRace = races[1]; // Selecting "Elf"
-Class selectedClass = charClass[0]; // Selecting "Fighter"
-
-// Example ability scores (randomly assigned or predefined)
-abilityScores initialScores(15, 12, 14, 10, 8, 11); // Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma
-
-// Create the player character
-Character player(characterName, selectedRace, selectedClass, initialScores);
+//// Choose a name for the character
+//string characterName = "Aric";
+//
+//// Select race and class (for example)
+//Race selectedRace = races[1]; // Selecting "Elf"
+//Class selectedClass = charClass[0]; // Selecting "Fighter"
+//
+//// Example ability scores (randomly assigned or predefined)
+//abilityScores initialScores(15, 12, 14, 10, 8, 11); // Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma
+//
+//// Create the player character
+//Character player(characterName, selectedRace, selectedClass, initialScores);
 
 // Display player stats to confirm initialization
 
@@ -110,7 +107,7 @@ void ResetColor() { cout << "\033[0m"; }
 
 
 
-void combat(Character& player, Enemy& enemy);
+void combat(Character& player, Enemy& enemy, vector<Item>& inventory);
 
 
 bool skipDelays = false; // Global variable to track delay preference
@@ -259,8 +256,52 @@ int main()
     cout << "'Have a good day!'";
     ResetColor();
     exploreTown();
+    char tutorial;
+    cout << "Hang on! before you head out there you may need a bit of information.\nDo you know how to fight in these lands? (y/n): ";
+    cin >> tutorial;
+    if (tutorial == 'n' || tutorial == 'N') {
+        cout << "Hi there, my name is Ryder and i will be the friendly voice in your head that helps you out!\n";
+        delay(2 * 1000);
+        cout << "Let me teach you some things about how combat works in the world of caspira.\n";
+        delay(2 * 1000);
 
-    return 0;
+        cout << "\nChoose an action:\n";
+        cout << "[1] Attack\n";
+        cout << "[2] Defend\n";
+        cout << "[3] Use Item\n";
+        cout << "[4] Run\n\n";
+        delay(2 * 1000);
+
+        cout << "This is what you will see when you enter combat, \nYou don't need to choose anything right now i am just giving you an example!\n";
+        delay(3 * 1000);
+        cout << "Now, [1] Attack, should be self explanatory, \nyou will attack with whatever weapon you have equipped currently.\n";
+        delay(3 * 1000);
+        cout << "Next, [2] Defend, you will raise your weapon or shield into a defensive position, \nyou will reduce any incoming damage to '1 damage' for that round.\n";
+        delay(3 * 1000);
+        cout << "Next, [3] Use Item, this will open your inventory and let you choose from a list of useable items, such as potions, \nyou then give up your turn to use that item.\n";
+        delay(3 * 1000);
+        cout << "Finally, [4] Run, you will try to run away from the fight. \nit is only a percentage chance you will run away and if you fail the enemy will get a free attack on you.\n";
+        delay(3 * 1000);
+        cout << "Now that we have gone over the basics of the system, let's get you some hands on experience!\n\n";
+        delay(2 * 1000);
+        cout << "A Random Goblin appears in front of you! \nIt looks angry and hungry.\n";
+        delay(4 * 1000);
+    }
+
+    else {
+        cout << "\nWatch out!\n";
+        cout << "Ambush!\nYou were ambushed the moment you exited the town!\n";
+    }
+    Enemy enemy("Goblin", 2, 10);
+    combat(player, enemy, vector<Item>&inventory);
+    if (player.isAlive() == false) {
+        cout << "Game over man! Game over!\n\n";
+        exit(0);
+    }
+    else {
+        cout << "Congratulation on your first victory!";
+    }
+        return 0;
 }
 
 // Display merchant items
@@ -586,35 +627,37 @@ void exploreTown() {
     }
 }
 
-void combat(Character& player, Enemy& enemy) {
+void combat(Character& player, Enemy& enemy, vector<Item>& inventory) {
     bool inCombat = true;
+    cout << enemy.getName() << " snarls at you!\n";
 
     while (inCombat && player.isAlive() && enemy.isAlive()) {
-        std::cout << "\nChoose an action:\n";
-        std::cout << "[1] Attack\n";
-        std::cout << "[2] Defend\n";
-        std::cout << "[3] Use Item\n";
-        std::cout << "[4] Run\n";
+
+        cout << "\nChoose an action:\n";
+        cout << "[1] Attack\n";
+        cout << "[2] Defend\n";
+        cout << "[3] Use Item\n";
+        cout << "[4] Run\n";
 
         int choice;
-        std::cin >> choice;
+        cin >> choice;
 
         switch (choice) {
         case 1: // Attack
         {
             int damageToEnemy = player.attack();
+            cout << player.getName() << " attacks " << enemy.getName() << " for " << damageToEnemy << " damage!" << endl;
             enemy.takeDamage(damageToEnemy);
-            std::cout << player.getName() << " attacks " << enemy.getName() << " for " << damageToEnemy << " damage!" << std::endl;
             if (!enemy.isAlive()) {
-                std::cout << enemy.getName() << " has been defeated!" << std::endl;
-                break; // Exit combat
+                cout << enemy.getName() << " has been defeated!" << endl;
+                inCombat = false; // Exit combat
             }
         }
         break;
 
         case 2: // Defend
         {
-            std::cout << player.getName() << " defends this turn!" << std::endl;
+            cout << player.getName() << " defends this turn!" << endl;
             // Implement defense logic (e.g., reduce damage from the next attack)
             continue; // Skip enemy's turn if defending
         }
@@ -622,37 +665,37 @@ void combat(Character& player, Enemy& enemy) {
 
         case 3: // Use Item
         {
-            std::cout << "Using an item is not implemented yet.\n"; // Placeholder
-            // You can implement inventory management here.
+            cout << "Using an item is not implemented yet.\n"; // Placeholder
+            // Implement inventory management here if needed.
         }
         break;
 
         case 4: // Run
         {
-            std::cout << player.getName() << " attempts to run away!" << std::endl;
+            cout << player.getName() << " attempts to run away!" << endl;
             if (rand() % 2 == 0) { // 50% chance to escape
-                std::cout << player.getName() << " successfully escaped!" << std::endl;
+                cout << player.getName() << " successfully escaped!" << endl;
                 inCombat = false; // Exit combat
             }
             else {
-                std::cout << "Failed to escape!" << std::endl;
+                cout << "Failed to escape!" << endl;
             }
         }
         break;
 
         default:
-            std::cout << "Invalid choice! Please choose again.\n";
+            cout << "Invalid choice! Please choose again.\n";
             continue; // Restart the loop
         }
 
         // Enemy's turn (if combat continues)
         if (inCombat && enemy.isAlive()) {
             int damageToPlayer = enemy.getAttack();
-            player.takeDamage(damageToPlayer);
-            std::cout << enemy.getName() << " attacks " << player.getName() << " for " << damageToPlayer << " damage!" << std::endl;
+            player.takeDamage(damageToPlayer); // Use player variable correctly
+            cout << enemy.getName() << " attacks " << player.getName() << " for " << damageToPlayer << " damage!" << endl;
 
             if (!player.isAlive()) {
-                std::cout << player.getName() << " has been defeated!" << std::endl;
+                cout << player.getName() << " has been defeated!" << endl;
                 inCombat = false; // Exit combat
             }
         }

@@ -1,16 +1,18 @@
 #pragma once
 
 
-
+#include <iostream>
 #include <string>
 #include "AbilityScores.h" // Include your AbilityScores struct
 
+using std::string;
+
 struct Race {
-    std::string name;
+    string name;
     abilityScores abilityIncrease;
 
     // Constructor
-    Race(const std::string& raceName, int strBonus, int dexBonus, int conBonus, int intlBonus, int wisBonus, int chaBonus);
+    Race(const string& raceName, int strBonus, int dexBonus, int conBonus, int intlBonus, int wisBonus, int chaBonus);
 };
 
 

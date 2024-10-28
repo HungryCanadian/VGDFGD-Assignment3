@@ -6,9 +6,12 @@
 
 #include "AbilityScores.h" 
 #include "Race.h"         
-#include "Class.h"        
+#include "Class.h"  
 
-using namespace std;
+using std::cout;
+using std::cin;
+
+
 
 class Character {
 public:
@@ -20,7 +23,7 @@ public:
     int mHealth;
     int mDamage;
 
-    // Constructor
+    // Parameterized constructor
     Character(const string& characterName, const Race& characterRace, const Class& characterClass, const abilityScores& scores);
 
     void calculateBonuses();

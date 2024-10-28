@@ -5,8 +5,9 @@ Enemy::Enemy(const string& name, int damage, int health)
     : mName(name), mDamage(damage), mHealth(health) {}
 
 // Attack method
-void Enemy::Attack() const {
+int Enemy::Attack() const {
     cout << "Attack inflicts " << mDamage << " damage." << endl;
+    return mDamage;
 }
 
 // Taunt method

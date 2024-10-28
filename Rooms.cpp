@@ -7,7 +7,6 @@ void displayShopInventory();
 void displayPlayerInventory();
 void runShop();
 void combat(Character& player, Enemy& enemy);
-Character& player;
 
 
 // Create an instance of Character
@@ -23,13 +22,13 @@ void visitGeneralStore() {
 }
 
 void visitBlacksmith() {
-    // Logic for blacksmith
+    // code for blacksmith
 }
 
 void visitOutskirts() {
-    // Logic for outskirts
-    Enemy goblin("Goblin", 5, 30);
-    combat(player, goblin);
+    // code for outskirts
+    /*Enemy goblin("Goblin", 5, 30);
+    combat(player, goblin);*/
 }
 
 // Room instances

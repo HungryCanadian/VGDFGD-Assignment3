@@ -1,14 +1,17 @@
 #pragma once
 
-
+#include <iostream>
 #include <string>
 
+using std::string;
+
 struct Class {
-    std::string name;
+    string name;
     int defaultHealth;
 
+
     // Constructor
-    Class(const std::string& className, int health);
+    Class(const string& className, int health);
 };
 
 

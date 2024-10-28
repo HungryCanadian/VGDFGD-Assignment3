@@ -1,5 +1,6 @@
 #include "Character.h"
 
+
 // Constructor implementation
 Character::Character(const string& characterName, const Race& characterRace, const Class& characterClass, const abilityScores& scores)
     : mName(characterName), mRace(characterRace), mType(characterClass), mBaseScores(scores), mBonuses(0, 0, 0, 0, 0, 0) {
@@ -32,7 +33,7 @@ bool Character::isAlive() const {
 }
 
 int Character::attack() const {
-    return rand() % (mBonuses.strength + 1); // Example attack damage calculation
+    return rand() % 3 + (mBonuses.strength + 1); // Example attack damage calculation
 }
 
 string Character::getName() const {

@@ -13,7 +13,7 @@ protected:
 public:
     Enemy(const string& name, int damage = 1, int health = 10);
 
-    void Attack() const;
+    int Attack() const;
     void Taunt() const;
     void takeDamage(int damage);
     bool isAlive() const;

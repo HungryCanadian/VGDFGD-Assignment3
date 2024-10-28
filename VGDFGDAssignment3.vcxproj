@@ -131,6 +131,7 @@
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Class.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="Race.cpp" />
     <ClCompile Include="Rooms.cpp" />
     <ClCompile Include="VGDFGDAssignment3.cpp" />
@@ -139,7 +140,9 @@
     <ClInclude Include="AbilityScores.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="Class.h" />
+    <ClInclude Include="Effect.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="Race.h" />
     <ClInclude Include="Rooms.h" />
   </ItemGroup>

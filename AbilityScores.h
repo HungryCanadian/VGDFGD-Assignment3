@@ -8,6 +8,7 @@ struct abilityScores {
     int wisdom;
     int charisma;
 
+
     // Constructor
     abilityScores(int str, int dex, int con, int intl, int wis, int cha);
 
