@@ -9,7 +9,9 @@
 #include "CharacterClass.h"
 #include "Item.h"
 #include "Equipment.h"
-#include "Inventory.h"
+
+
+class Inventory;
 
 
 using std::cout;
@@ -48,7 +50,7 @@ public:
 
 
 private:
-    Inventory inventory;
+    Inventory* inventory;
     int totalDamageReduction = 0;
     int calculateBonus(int score) const;
     int mHealth;

@@ -9,7 +9,7 @@
 #include <limits>
 #include <ctime>
 
-#include "Globals.h"
+
 #include "Rooms.h"
 #include "AbilityScores.h"
 #include "Character.h"
@@ -20,6 +20,7 @@
 #include "Equipment.h"
 #include "Effect.h"
 #include "Combat.h"
+#include "Globals.h"
 
 using std::cout;
 using std::cin;
@@ -196,7 +197,8 @@ int main()
     delay(3 * 1000);
     cout << "\nLet's get a bit more information on our Hero!\n\n";
 
-    Character createCharacter();
+    Character player(createCharacter());
+    
 
     cout << "Now " << player.getName() << ", let's start your adventure!\n\n";
 
@@ -436,7 +438,6 @@ int purchaseEquipItem(const string& input) { //purchase items from the blacksmit
         }
     }
 }
-
 
 int sellGeneralItem(const string& input) { //Selling items to the general store
     while (true) {

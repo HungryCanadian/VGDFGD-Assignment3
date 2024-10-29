@@ -1,7 +1,7 @@
 #include "Combat.h"
 
 Combat::Combat(Character& player, Enemy& enemy, vector<Item>& inventory)
-	:player(player), enemy(enemy), inventory(inventory) { }
+	:player(player), enemy(enemy), inventory2(inventory) { }
 
 void Combat::start() {
 	bool inCombat = true;
@@ -79,7 +79,7 @@ void Combat::useItem() {
 	cout << "Choose an item to use:\n";
 
 	vector<Item*> consumableItems;
-	for (auto& item : inventory) {
+	for (auto& item : inventory2) {
 		if (item.isUsable() && item.getQuantity() > 0) {
 			consumableItems.push_back(&item); // add consumable item to a list
 			cout << " - " << item.getName() << " ( x " << item.getQuantity() << ")\n";
@@ -112,9 +112,9 @@ void Combat::useItem() {
 
 		if (selectedItem->getQuantity() <= 0) {
 			//remove item from inventory
-			for (auto it = inventory.begin(); it != inventory.end(); ++it) {
+			for (auto it = inventory2.begin(); it != inventory2.end(); ++it) {
 				if (it->getName() == selectedItem->getName()) {
-					inventory.erase(it);
+					inventory2.erase(it);
 					cout << "You have no more: " << selectedItem->getName() << "\n";
 					break;
 				}

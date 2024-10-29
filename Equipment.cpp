@@ -2,6 +2,8 @@
 #include "Equipment.h"
 #include "Globals.h"
 
+extern Character player;
+
 Gear::Gear(const string& name, const Effect& effect, int quantity, int value, bool consumable, ItemType type, bool equipped)
 	: Item(name, effect, quantity, value, consumable, type), equipped(equipped) { }
 

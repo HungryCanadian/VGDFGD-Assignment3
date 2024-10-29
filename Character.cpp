@@ -1,4 +1,5 @@
 #include "Character.h"
+#include "Inventory.h"
 
 
 // Constructor implementation
@@ -74,23 +75,23 @@ void Character::removeDamageReduction(int amount) {
 }
 
 void Character::AddItemToInventory(const Item& item) {
-    inventory.AddItem(item);
+    inventory->AddItem(item);
 }
 
 void Character::RemoveItemFromInventory(const std::string& itemName) {
-    inventory.RemoveItem(itemName);
+    inventory->RemoveItem(itemName);
 }
 
 void Character::ListInventory() const {
-    inventory.ListItems();
+    inventory->ListItems();
 }
 
 void Character::EquipGear(Gear& gear) {
-    inventory.EquipGear(gear);
+    inventory->EquipGear(gear);
 }
 
 void Character::UnequipGear(Gear& gear) {
-    inventory.UnequipGear(gear);
+    inventory->UnequipGear(gear);
 }
 
 // Calculate the bonus based on the score (Member function)

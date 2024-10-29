@@ -3,6 +3,7 @@
 #include "Character.h"
 #include "Enemy.h"
 #include "Item.h"
+#include "Inventory.h"
 #include <vector>
 #include <iostream>
 
@@ -18,7 +19,7 @@ public:
 private:
 	Character& player;
 	Enemy& enemy;
-	vector<Item> inventory;
+	vector<Item> inventory2;
 
 	//void handlePlayerAction(int choice); // does the player want to heal or attack?
 	void enemyTurn(); // runs the enemies turn

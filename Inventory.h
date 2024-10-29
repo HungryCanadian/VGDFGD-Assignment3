@@ -5,7 +5,7 @@
 #include "Character.h"
 #include "Item.h"
 #include "Equipment.h"
-
+class Item;
 
 using std::vector;
 using std::string;
