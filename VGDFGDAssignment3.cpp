@@ -56,7 +56,7 @@ vector<Item> items = {
 
 };
 
-vector<Item> inventory2 = {
+vector<Item> inventory = {
     { "backpack", Effect(0,0,0), 1, 1, false, ItemType::Item },
     { "gold pouch", Effect(0,0,0), 1, 1, false, ItemType::Item },
     { "mess kit", Effect(0,0,0), 1, 1, false, ItemType::Item },
@@ -253,7 +253,7 @@ int main()
             cout << "Ambush!\nYou were ambushed the moment you exited the town!\n";
         }
         Enemy enemy("Goblin", 2, 10);
-        Combat combat(player, enemy, inventory2);
+        Combat combat(player, enemy, inventory);
         combat.start();
         if (player.isAlive() == false) {
             cout << "Game over man! Game over!\n\n";
@@ -288,7 +288,7 @@ void displayBlacksmithInventory() {
 // Display player items
 void displayPlayerInventory() {
     cout << "\nYour items: \n";
-    for (const auto& item : inventory2) {
+    for (const auto& item : inventory) {
         cout << item.getQuantity() << " x " << item.getName() << endl;
     }
 }
@@ -325,15 +325,15 @@ int purchaseGeneralItem(const string& input) { // purchase items from the genera
                 item.decreaseQuantity(howMany);
 
                 // Check if the item already exists in the inventory
-                auto invIter = std::find_if(inventory2.begin(), inventory2.end(), [&](const Item& invItem) {
+                auto invIter = std::find_if(inventory.begin(), inventory.end(), [&](const Item& invItem) {
                     return invItem.getName() == item.getName();
                     });
 
-                if (invIter != inventory2.end()) {
+                if (invIter != inventory.end()) {
                     invIter->increaseQuantity(howMany);
                 }
                 else {
-                    inventory2.push_back(Item(item.getName(), item.getEffect(), howMany, item.getValue(), item.isUsable(), item.mType)); // Add new item to inventory
+                    inventory.push_back(Item(item.getName(), item.getEffect(), howMany, item.getValue(), item.isUsable(), item.mType)); // Add new item to inventory
                 }
 
                 cout << "You have purchased " << howMany << " " << item.getName() << "s!\n";
@@ -398,15 +398,15 @@ int purchaseEquipItem(const string& input) { //purchase items from the blacksmit
                 item.decreaseQuantity(howMany);
 
                 // Check if the item already exists in the inventory
-                auto invIter = std::find_if(inventory2.begin(), inventory2.end(), [&](const Item& invItem) {
+                auto invIter = std::find_if(inventory.begin(), inventory.end(), [&](const Item& invItem) {
                     return invItem.getName() == item.getName();
                     });
 
-                if (invIter != inventory2.end()) {
+                if (invIter != inventory.end()) {
                     invIter->increaseQuantity(howMany);
                 }
                 else {
-                    inventory2.push_back(Item(item.getName(), item.getEffect(), howMany, item.getValue(), item.isUsable(), item.mType)); // Add new item to inventory
+                    inventory.push_back(Item(item.getName(), item.getEffect(), howMany, item.getValue(), item.isUsable(), item.mType)); // Add new item to inventory
                 }
 
                 cout << "You have purchased " << howMany << " " << item.getName() << "s!\n";
@@ -455,11 +455,11 @@ int sellGeneralItem(const string& input) { //Selling items to the general store
                     return 0;
                 }
 
-                auto invIter = std::find_if(inventory2.begin(), inventory2.end(), [&](const Item& invItem) {
+                auto invIter = std::find_if(inventory.begin(), inventory.end(), [&](const Item& invItem) {
                     return invItem.getName() == item.getName();
                     });
 
-                if (invIter != inventory2.end() && invIter->getQuantity() >= howMany) {
+                if (invIter != inventory.end() && invIter->getQuantity() >= howMany) {
                     gold += item.getValue() * howMany;
                     invIter->decreaseQuantity(howMany);
 
@@ -473,7 +473,7 @@ int sellGeneralItem(const string& input) { //Selling items to the general store
 
                     // If quantity drops to 0, remove the item from inventory
                     if (invIter->getQuantity() == 0) {
-                        inventory2.erase(invIter);
+                        inventory.erase(invIter);
                     }
 
                     cout << "You have successfully sold " << howMany << " " << item.getName() << "s!\n";
@@ -528,11 +528,11 @@ int sellEquipItem(const string& input) { // sell items to the blacksmith
                     return 0;
                 }
 
-                auto invIter = std::find_if(inventory2.begin(), inventory2.end(), [&](const Item& invItem) {
+                auto invIter = std::find_if(inventory.begin(), inventory.end(), [&](const Item& invItem) {
                     return invItem.getName() == item.getName();
                     });
 
-                if (invIter != inventory2.end() && invIter->getQuantity() >= howMany) {
+                if (invIter != inventory.end() && invIter->getQuantity() >= howMany) {
                     gold += item.getValue() * howMany;
                     invIter->decreaseQuantity(howMany);
 
@@ -546,7 +546,7 @@ int sellEquipItem(const string& input) { // sell items to the blacksmith
 
                     // If quantity drops to 0, remove the item from inventory
                     if (invIter->getQuantity() == 0) {
-                        inventory2.erase(invIter);
+                        inventory.erase(invIter);
                     }
 
                     cout << "You have successfully sold " << howMany << " " << item.getName() << "s!\n";
