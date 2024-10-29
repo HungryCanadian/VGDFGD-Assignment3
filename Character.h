@@ -6,7 +6,11 @@
 
 #include "AbilityScores.h" 
 #include "Race.h"         
-#include "Class.h"  
+#include "CharacterClass.h"
+#include "Item.h"
+#include "Equipment.h"
+#include "Inventory.h"
+
 
 using std::cout;
 using std::cin;
@@ -15,16 +19,13 @@ using std::cin;
 
 class Character {
 public:
-    string mName;
-    Race mRace;
-    Class mType;
+
     abilityScores mBaseScores;
     abilityScores mBonuses;
-    int mHealth;
-    int mDamage;
+
 
     // Parameterized constructor
-    Character(const string& characterName, const Race& characterRace, const Class& characterClass, const abilityScores& scores);
+    Character(const string& characterName, const Race& characterRace, const CharacterClass& characterClass, const abilityScores& scores);
 
     void calculateBonuses();
     void calculateHealth();
@@ -33,9 +34,27 @@ public:
     int attack() const;
     string getName() const;
     int getHealth();
+    int getMaxHealth();
+    int heal(int amount);
     int getAttack() const;
     void displayStats() const;
+    void EquipGear(Gear& gear); // To equip armor
+    void UnequipGear(Gear& gear); // To unequip armor
+    void addDamageReduction(int amount); // To add to damage reduction
+    void removeDamageReduction(int amount); // To remove from damage reduction
+    void AddItemToInventory(const Item& item); // Method to add an item
+    void RemoveItemFromInventory(const std::string& itemName); // Method to remove an item
+    void ListInventory() const; // Method to list items in inventory
+
 
 private:
-    int calculateBonus(int score) const; // Declaration of the private method
+    Inventory inventory;
+    int totalDamageReduction = 0;
+    int calculateBonus(int score) const;
+    int mHealth;
+    int mDamage;
+    int mMaxHealth;
+    string mName;
+    Race mRace;
+    CharacterClass mType;
 };

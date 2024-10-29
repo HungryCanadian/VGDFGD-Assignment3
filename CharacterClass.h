@@ -5,13 +5,13 @@
 
 using std::string;
 
-struct Class {
+struct CharacterClass {
     string name;
     int defaultHealth;
 
 
     // Constructor
-    Class(const string& className, int health);
+    CharacterClass(const string& className, int health);
 };
 
 

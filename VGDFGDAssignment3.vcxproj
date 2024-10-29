@@ -129,8 +129,11 @@
   <ItemGroup>
     <ClCompile Include="AbilityScores.cpp" />
     <ClCompile Include="Character.cpp" />
-    <ClCompile Include="Class.cpp" />
+    <ClCompile Include="CharacterClass.cpp" />
+    <ClCompile Include="Combat.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Equipment.cpp" />
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Race.cpp" />
     <ClCompile Include="Rooms.cpp" />
@@ -139,9 +142,13 @@
   <ItemGroup>
     <ClInclude Include="AbilityScores.h" />
     <ClInclude Include="Character.h" />
-    <ClInclude Include="Class.h" />
+    <ClInclude Include="CharacterClass.h" />
+    <ClInclude Include="Combat.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Equipment.h" />
+    <ClInclude Include="Globals.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Race.h" />
     <ClInclude Include="Rooms.h" />

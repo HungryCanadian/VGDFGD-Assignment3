@@ -2,7 +2,7 @@
 
 
 // Constructor implementation
-Character::Character(const string& characterName, const Race& characterRace, const Class& characterClass, const abilityScores& scores)
+Character::Character(const string& characterName, const Race& characterRace, const CharacterClass& characterClass, const abilityScores& scores)
     : mName(characterName), mRace(characterRace), mType(characterClass), mBaseScores(scores), mBonuses(0, 0, 0, 0, 0, 0) {
     mBaseScores.applyRaceBonuses(mRace.abilityIncrease);
     calculateBonuses();
@@ -21,10 +21,13 @@ void Character::calculateBonuses() {
 void Character::calculateHealth() {
     int constitutionModifier = mBonuses.constitution;
     mHealth = mType.defaultHealth + constitutionModifier; // Set health based on class default
+    mMaxHealth = mHealth;
 }
 
 void Character::takeDamage(int damage) {
-    mHealth -= damage;
+    int effectiveDamage = damage - totalDamageReduction; // totalDamageReduction is calculated based on equipped armor and if the player chose to defend or not.
+    if (effectiveDamage < 0) effectiveDamage = 0; //prevent negative damage
+    mHealth -= effectiveDamage;
     if (mHealth < 0) mHealth = 0;
 }
 
@@ -44,8 +47,50 @@ int Character::getHealth() {
     return mHealth;
 }
 
+int Character::getMaxHealth() {
+    return mMaxHealth;
+}
+int Character::heal(int amount) {
+    mHealth += amount;
+    if (mHealth > mMaxHealth) {
+        mHealth = mMaxHealth;
+    }
+    return mHealth;
+}
+
 int Character::getAttack() const {
     return mDamage;
+}
+
+void Character::addDamageReduction(int amount) {
+    totalDamageReduction += amount;
+}
+
+void Character::removeDamageReduction(int amount) {
+    totalDamageReduction -= amount;
+    if (totalDamageReduction < 0) {
+        totalDamageReduction = 0; // make sure you can't take extra damage anymore
+    }
+}
+
+void Character::AddItemToInventory(const Item& item) {
+    inventory.AddItem(item);
+}
+
+void Character::RemoveItemFromInventory(const std::string& itemName) {
+    inventory.RemoveItem(itemName);
+}
+
+void Character::ListInventory() const {
+    inventory.ListItems();
+}
+
+void Character::EquipGear(Gear& gear) {
+    inventory.EquipGear(gear);
+}
+
+void Character::UnequipGear(Gear& gear) {
+    inventory.UnequipGear(gear);
 }
 
 // Calculate the bonus based on the score (Member function)

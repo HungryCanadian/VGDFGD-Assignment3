@@ -1,41 +1,67 @@
 #include "Rooms.h"
 #include "character.h"
 
-int sellItem(const string& input);
-int purchaseItem(const string& input);
-void displayShopInventory();
-void displayPlayerInventory();
-void runShop();
-void combat(Character& player, Enemy& enemy);
+#include "Rooms.h"
 
+Room::Room(string name, string description, bool locked)
+	: mName(name), mDescription(description), mLocked(locked), mFirstVisit(true) { }
 
-// Create an instance of Character
-//Character player("Hero", ("Human", 1, 1, 0, 0, 0, 0), ("Fighter", 10), (10, 10, 10, 10, 10, 10));
-
-
-Room::Room(const string& roomName, const string& roomDesc, const vector<string>& roomExits, void (*roomAction)())
-    : name(roomName), description(roomDesc), exits(roomExits), action(roomAction) {}
-
-void visitGeneralStore() {
-    cout << "\nWelcome to the General Store!\n";
-    runShop(); // Allow purchasing or selling
+void Room::AddExit(Room* room) {
+	mExits.push_back(room);
 }
 
-void visitBlacksmith() {
-    // code for blacksmith
+vector<Room*> Room::GetExits() {
+	return mExits;
 }
 
-void visitOutskirts() {
-    // code for outskirts
-    /*Enemy goblin("Goblin", 5, 30);
-    combat(player, goblin);*/
+int Room::GetNumberOfExits() {
+	return mExits.size();
 }
 
-// Room instances
-Room generalStore("General Store", "\nYou see shelves filled with various supplies.", { "Blacksmith", "Town Square" }, visitGeneralStore);
-Room blacksmith("Blacksmith", "\nYou smell hot metal and see tools everywhere.", { "General Store", "Town Square" }, visitBlacksmith);
-Room outskirts("Outskirts", "\nThe town behind you and long flowing grassland in front of you..", { "Town Square" }, visitOutskirts);
-Room townSquare("Town Square", "\nThe bustling center of the town, with paths leading to various shops.", { "Outskirts", "General Store", "Blacksmith" }, nullptr);
+void Room::ListExits() {
+	//Check and make sure we actually have exits
+	if (mExits.size() > 0) {
+		//if we do
+			//loop through those exits and display their names
+		cout << "You see the following exits: \n";
+		for (int i = 0; i < mExits.size(); i++)
+			cout << i + 1 << ". " << mExits[i]->GetName() << "\n";
+	}
+	else {
+		//else
+			//display "There are no exits!"
+		cout << "There is no escape!\n";
+	}
+	//Generates a blank line 
+	cout << "\n";
 
-// Room collection
-vector<Room> rooms = { generalStore, blacksmith, townSquare, outskirts };
+
+}
+
+string Room::GetName() {
+	return mName;
+}
+
+void Room::DisplayRoom() {
+	cout << mName << "\n";
+	cout << "-----------------------\n";
+	cout << mDescription << "\n";
+
+	//List the number of exits
+	ListExits();
+
+
+
+	//TODO
+	//List any/all Entities in the room
+	//List whether or not the room is locked.
+}
+
+bool Room::IsFirstVisit() {
+	if (mFirstVisit) {
+		mFirstVisit = false; // Set to false after first visit
+		return true; // Indicate this is the first visit
+	}
+	return false; // Indicate this is not the first visit
+}
+

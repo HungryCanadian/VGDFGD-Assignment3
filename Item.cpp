@@ -1,38 +1,59 @@
 #include "Item.h"
 
-Item::Item(const string& name, const Effect& effect, int quantity, bool consumable)
-	:name(name), effect(effect), quantity(quantity), consumable(consumable) { }
+Item::Item(const string& name, const Effect& effect, int quantity, int value, bool consumable, ItemType type)
+	: mName(name), mEffect(effect), mQuantity(quantity), mValue(value), mConsumable(consumable), mType(type) {}
 
 void Item::use() {
-	if (quantity > 0) {
-		cout << "Using " << name << "!\n";
+	if (mQuantity > 0) {
+		cout << "Using " << mName << "!\n";
 
-		if (effect.healing > 0) {
-			cout << "You heal for " << effect.healing << " health.\n";
+		if (mEffect.healing > 0) {
+			cout << "You heal for " << mEffect.healing << " health.\n";
 		}
 
-		if (effect.damage > 0) {
-			cout << "You deal " << effect.damage << " damage.\n";
+		if (mEffect.damage > 0) {
+			cout << "You deal " << mEffect.damage << " damage.\n";
 		}
 
-		if (consumable) {
-			quantity--;
-			cout << "Remaining amount: " << quantity << "\n";
+		if (mConsumable) {
+			mQuantity--;
+			cout << "Remaining amount: " << mQuantity << "\n";
 		}
 	}
 	else {
-		cout << name << "Can't be used or you have none left!\n";
+		cout << mName << "Can't be used or you have none left!\n";
 	}
 }
 
 bool Item::isUsable() const {
-	return (effect.healing > 0 || effect.damage > 0); //item should be classified as usable if it has a healing or damage component
+	return (mEffect.healing > 0 || mEffect.damage > 0); //item should be classified as usable if it has a healing or damage component
 }
 
 string Item::getName() const {
-	return name;
+	return mName;
 }
 
 int Item::getQuantity() const {
-	return quantity;
+	return mQuantity;
 }
+
+int Item::getValue() const {
+	return mValue;
+}
+
+Effect Item::getEffect() const {
+	return mEffect;
+}
+
+void Item::decreaseQuantity(int howMany) {
+	if (howMany > 0 && mQuantity >= howMany) {
+		mQuantity -= howMany;
+	}
+	else {
+		cout << "Invalid amount or not enough quantity!\n";
+	}
+}
+
+void Item::increaseQuantity(int amount) {
+		mQuantity += amount;
+	}

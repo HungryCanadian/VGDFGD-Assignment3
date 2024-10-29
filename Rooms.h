@@ -1,33 +1,44 @@
 #pragma once
-
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
-#include "Enemy.h" // Include if Enemy class is in a separate file
 
-using namespace std;
+using std::string;
+using std::vector;
+using std::cout;
 
-struct Room {
-    string name;
-    string description;
-    vector<string> exits; // Names of rooms that can be accessed
-    void (*action)(); // Pointer to function for room-specific actions
+class Room {
+public:
+	Room(string name = "Empty Room", string description = "This is an empty room.", bool locked = false);
+	void AddExit(Room* roomToAdd);
+	vector<Room*> GetExits();
+	int GetNumberOfExits();
+	void ListExits();
 
-    Room(const string& roomName, const string& roomDesc, const vector<string>& roomExits, void (*roomAction)());
+	void DisplayRoom();
+	string GetName();
+	bool IsFirstVisit();
+
+	//AddEntity(Entity* entity);
+	//vector<Entity*> GetEntities();
+	//void ListEntities();
+
+private:
+	string mName;
+	string mDescription;
+	//TODO
+	//add a vector of entitities that will store any/all entities (NPCs/Enemies) that are in this room.
+	vector<Room*> mExits;
+
+
+	//Extra detail --> impliment if time allows, but not REQUIRED
+	bool mLocked;
+	bool mFirstVisit;
+
 };
 
-// Function prototypes
-void exploreTown();
-void visitGeneralStore();
-void visitBlacksmith();
-void visitOutskirts();
 
-// Room instances
-extern Room generalStore;
-extern Room blacksmith;
-extern Room outskirts;
-extern Room townSquare;
 
-// Room collection
-extern vector<Room> rooms;
-
+//vector of Entities
+//Vector of Doors/exits
+//some kind of lock (boolean)

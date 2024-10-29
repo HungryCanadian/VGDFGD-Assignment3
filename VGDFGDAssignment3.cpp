@@ -9,14 +9,17 @@
 #include <limits>
 #include <ctime>
 
+#include "Globals.h"
 #include "Rooms.h"
 #include "AbilityScores.h"
 #include "Character.h"
-#include "Class.h"
+#include "CharacterClass.h"
 #include "Enemy.h"
 #include "Race.h"
 #include "Item.h"
 #include "Equipment.h"
+#include "Effect.h"
+#include "Combat.h"
 
 using std::cout;
 using std::cin;
@@ -47,67 +50,42 @@ string newItem = "";
 
 
 vector<Item> items = {
-    { "sword", 15, 1 },
-    { "shield", 25, 1 },
-    { "potion", 5, 3 },
-    { "crossbow", 20, 1 },
-    { "Rations", 1, 30 },
-    { "armor", 100, 1 }
-};
-
-vector<Item> inventory = {
-    { "Backpack", 0, 1 },
-    { "Gold pouch", 0, 1 },
-    { "Mess kit", 3, 1 },
-    { "Tinderbox", 5, 1 },
-    { "Torch", 1, 10 },
-    { "Rations", 1, 10 },
-    { "Waterskin", 2, 1 },
-    { "Rope", 2, 1 },
+    { "healingpotion", Effect(5,0,0), 3, 5, true, ItemType::Consumable },
+    { "rations", Effect(2,0,0), 30, 1, true, ItemType::Consumable },
 
 };
 
-int sellItem(const string& input);
-int purchaseItem(const string& input);
+vector<Item> inventory2 = {
+    { "backpack", Effect(0,0,0), 1, 1, false, ItemType::Item },
+    { "gold pouch", Effect(0,0,0), 1, 1, false, ItemType::Item },
+    { "mess kit", Effect(0,0,0), 1, 1, false, ItemType::Item },
+    { "tinderbox", Effect(0,0,0), 1, 1, false, ItemType::Item },
+    { "torch", Effect(0,0,0), 10, 1, false, ItemType::Item },
+    { "rations", Effect(2,0,0), 30, 1, true, ItemType::Consumable },
+    { "waterskin", Effect(0,0,0), 1, 1, false, ItemType::Item },
+    { "rope", Effect(0,0,0), 1, 2, false, ItemType::Item }
+
+};
+
+vector<Gear> equipment = {
+    { "sword", Effect(0,3,0), 1, 15, false, ItemType::Weapon, false },
+    { "shield", Effect(0,0,0,1), 1, 25, false, ItemType::Gear, false },
+    { "crossbow", Effect(0,2,0), 1, 20, false, ItemType::Weapon, false },
+    { "armor", Effect(0,0,0,2), 1, 100, false, ItemType::Gear, false }
+
+};
+
+int sellGeneralItem(const string& input);
+int sellEquipItem(const string& input);
+int purchaseGeneralItem(const string& input);
+int purchaseEquipItem(const string& input);
 void displayShopInventory();
 void displayPlayerInventory();
-void runShop();
-//// Choose a name for the character
-//string characterName = "Aric";
-//
-//// Select race and class (for example)
-//Race selectedRace = races[1]; // Selecting "Elf"
-//Class selectedClass = charClass[0]; // Selecting "Fighter"
-//
-//// Example ability scores (randomly assigned or predefined)
-//abilityScores initialScores(15, 12, 14, 10, 8, 11); // Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma
-//
-//// Create the player character
-//Character player(characterName, selectedRace, selectedClass, initialScores);
-
-// Display player stats to confirm initialization
-
-// Create a blank player character
-
-void SetColor(int textColor)
-{
-    cout << "\033[" << textColor << "m";
-}
-
-void ResetColor() { cout << "\033[0m"; }
-
-//Race myRace("Human", 1, 1, 0, 0, 0, 0); // Example race with bonuses
-//Class myClass("Fighter", 10);           // Example class with default health
-//abilityScores myScores(10, 10, 10, 10, 10, 10); // Example ability scores
-//
-//// Create an instance of Character
-//Character player("Hero", myRace, myClass, myScores);
-
-
-
-
-
-void combat(Character& player, Enemy& enemy, vector<Item>& inventory);
+Room* createTown();
+void handleRoomEvents(Room* currentRoom);
+void runGeneralStore();
+void runBlacksmith();
+void ChooseExit(Room*& currentRoom);
 
 
 bool skipDelays = false; // Global variable to track delay preference
@@ -135,16 +113,6 @@ vector<Race> races = {
     { "Tiefling", 0, 0, 0, 1, 0, 2}
 };
 
-//vector<EnemyRaces> eRaces = {
-//    { "Dwarf", 0, 0, 2, 0, 0, 0},
-//    { "Elf", 0, 2, 0, 0, 0, 0},
-//    { "Halfling",0, 2, 0, 0, 0, 0},
-//    { "Human", 0, 0, 1, 0, 2, 0},
-//    { "Gnome", 0, 0, 0, 2, 0, 0},
-//    { "Tiefling", 0, 0, 0, 1, 0, 2}
-//};
-
-
 vector<string> raceFlavorText = {
 "Dwarves are stout and hardy. +2 con\n",
 "Elves are graceful and agile. +2 Dex\n",
@@ -164,7 +132,7 @@ vector<string> classFlavorText = {
 "Rangers are skilled hunters and trackers, adept at surviving in the wild.\n"
 };
 
-vector<Class> charClass = {
+vector<CharacterClass> charClass = {
     { "Fighter", 10 },
     { "Paladin", 12 },
     { "Druid", 8 },
@@ -186,122 +154,114 @@ void delay(int milliseconds) {
 int main()
 {
 
-     system("cls");
-     cout << "The Vanishing Vessels of Caspira!\n";
-     cout << "Would you like to skip the story? (y/n): ";
-     char skipChoice;
-     cin >> skipChoice;
-     skipDelays = (skipChoice == 'y' || skipChoice == 'Y');
-     delay(3 * 1000);
-     cout << "In the shimmering waters of the Caspiran archipelago,\n";
-     delay(3 * 1000);
-     cout << "The islands, known for their lush forests and masterful shipbuilders,\n";
-     delay(3 * 1000);
-     cout << "thrived on exports of fine lumber and swift sailing ships.\n";
-     delay(3 * 1000);
-     cout << "Yet, a dark cloud loomed over the vibrant trade routes;\n";
-     delay(3 * 1000);
-     cout << "vessels laden with precious cargo had begun to vanish without a trace.\n\n";
-     delay(3 * 1000); 
-     delay(3 * 1000);
-     cout << "The people of Caspira grew anxious.\n";
-     delay(3 * 1000);
-     cout << "Whispers of curses and sea spirits filled the air as merchants and sailors traded tales of the lost ships.\n";
-     delay(3 * 1000);
-     cout << "One night, as the village gathered by the flickering lanterns,\n";
-     delay(3 * 1000);
-     cout << "an elderly sailor recounted a haunting legend a specter known as the Wraith of the Waves,\n";
-     delay(3 * 1000);
-     cout << "said to haunt the waters, claiming ships that dared to leave with timber from the sacred Heartwood Grove.\n\n";
-     delay(3 * 1000);
-     delay(3 * 1000);
-     cout << "Amidst the crowd, a newcomer emerged. With eyes like stormy seas and a unyielding spirit,\n";
-     delay(3 * 1000);
-     cout << "they had journeyed to Caspira seeking adventure. Hearing the villagers' plight,\n";
-     delay(3 * 1000);
-     cout << "they felt a calling to uncover the truth behind the disappearances.\n";
-     delay(3 * 1000);
-     cout << "they gathered there courage, determined to face whatever lay beneath the waves.\n";
-     delay(3 * 1000);
-     cout << "\nLet's get a bit more information on our Hero!\n\n";
 
-     Character player = createCharacter();
+    Room* currentRoom = createTown();
 
+    system("cls");
+    cout << "The Vanishing Vessels of Caspira!\n";
+    cout << "Would you like to skip the story? (y/n): ";
+    char skipChoice;
+    cin >> skipChoice;
+    skipDelays = (skipChoice == 'y' || skipChoice == 'Y');
+    delay(3 * 1000);
+    cout << "In the shimmering waters of the Caspiran archipelago,\n";
+    delay(3 * 1000);
+    cout << "The islands, known for their lush forests and masterful shipbuilders,\n";
+    delay(3 * 1000);
+    cout << "thrived on exports of fine lumber and swift sailing ships.\n";
+    delay(3 * 1000);
+    cout << "Yet, a dark cloud loomed over the vibrant trade routes;\n";
+    delay(3 * 1000);
+    cout << "vessels laden with precious cargo had begun to vanish without a trace.\n\n";
+    delay(3 * 1000);
+    delay(3 * 1000);
+    cout << "The people of Caspira grew anxious.\n";
+    delay(3 * 1000);
+    cout << "Whispers of curses and sea spirits filled the air as merchants and sailors traded tales of the lost ships.\n";
+    delay(3 * 1000);
+    cout << "One night, as the village gathered by the flickering lanterns,\n";
+    delay(3 * 1000);
+    cout << "an elderly sailor recounted a haunting legend a specter known as the Wraith of the Waves,\n";
+    delay(3 * 1000);
+    cout << "said to haunt the waters, claiming ships that dared to leave with timber from the sacred Heartwood Grove.\n\n";
+    delay(3 * 1000);
+    delay(3 * 1000);
+    cout << "Amidst the crowd, a newcomer emerged. With eyes like stormy seas and a unyielding spirit,\n";
+    delay(3 * 1000);
+    cout << "they had journeyed to Caspira seeking adventure. Hearing the villagers' plight,\n";
+    delay(3 * 1000);
+    cout << "they felt a calling to uncover the truth behind the disappearances.\n";
+    delay(3 * 1000);
+    cout << "they gathered there courage, determined to face whatever lay beneath the waves.\n";
+    delay(3 * 1000);
+    cout << "\nLet's get a bit more information on our Hero!\n\n";
 
+    Character createCharacter();
 
-  
     cout << "Now " << player.getName() << ", let's start your adventure!\n\n";
-    
-    cout << "You awake slowly and groggily, how much did you drink last night?\n\nYou look around the tiny room you had acquired for the night and see all your belongings are still there\n";
-    delay(2 * 1000);
-    cout << "You get up slowly and gather your things\n";
-    delay(1 * 1000);
-    displayPlayerInventory();
-    delay(5 * 1000);
-    cout << "You meander your way out of the room and down the stairs to the inn.\n\n";
-    delay(2 * 1000);
-    SetColor(31);
-    cout << "'rough night eh? well i would have a hangover too if i drank " << std::rand() % 50 + 1 << " bottles of rum as well.'\n";
-    delay(2 * 1000);
-    cout << "'I have a friend who sell's some things if you would like to take a look at his wares before you head out? \n(y/n): ";
-    ResetColor();
-    char shopping;
-    cin >> shopping;
-    if (shopping == 'y' || shopping == 'Y')
-        runShop();
-    else
-        SetColor(31);
-        cout << "'Fair enough! Hope that hangover treats you well then.'\n";
-    SetColor(31);
-    cout << "'Have a good day!'";
-    ResetColor();
-    exploreTown();
-    char tutorial;
-    cout << "Hang on! before you head out there you may need a bit of information.\nDo you know how to fight in these lands? (y/n): ";
-    cin >> tutorial;
-    if (tutorial == 'n' || tutorial == 'N') {
-        cout << "Hi there, my name is Ryder and i will be the friendly voice in your head that helps you out!\n";
-        delay(2 * 1000);
-        cout << "Let me teach you some things about how combat works in the world of caspira.\n";
-        delay(2 * 1000);
 
-        cout << "\nChoose an action:\n";
-        cout << "[1] Attack\n";
-        cout << "[2] Defend\n";
-        cout << "[3] Use Item\n";
-        cout << "[4] Run\n\n";
-        delay(2 * 1000);
+    while (true) {
+        handleRoomEvents(currentRoom);
+        currentRoom->DisplayRoom();
+        string direction;
+        cout << "Which would you like to go? Pick a number or '0' to quit)\n";
+        cin >> direction;
 
-        cout << "This is what you will see when you enter combat, \nYou don't need to choose anything right now i am just giving you an example!\n";
-        delay(3 * 1000);
-        cout << "Now, [1] Attack, should be self explanatory, \nyou will attack with whatever weapon you have equipped currently.\n";
-        delay(3 * 1000);
-        cout << "Next, [2] Defend, you will raise your weapon or shield into a defensive position, \nyou will reduce any incoming damage to '1 damage' for that round.\n";
-        delay(3 * 1000);
-        cout << "Next, [3] Use Item, this will open your inventory and let you choose from a list of useable items, such as potions, \nyou then give up your turn to use that item.\n";
-        delay(3 * 1000);
-        cout << "Finally, [4] Run, you will try to run away from the fight. \nit is only a percentage chance you will run away and if you fail the enemy will get a free attack on you.\n";
-        delay(3 * 1000);
-        cout << "Now that we have gone over the basics of the system, let's get you some hands on experience!\n\n";
-        delay(2 * 1000);
-        cout << "A Random Goblin appears in front of you! \nIt looks angry and hungry.\n";
-        delay(4 * 1000);
-    }
+        // Handle navigation based on exits
+        Room* nextRoom = nullptr;
+        void ChooseExit();
+        // Cleanup
+        delete currentRoom; // Note: You might need to delete all rooms properly
 
-    else {
-        cout << "\nWatch out!\n";
-        cout << "Ambush!\nYou were ambushed the moment you exited the town!\n";
-    }
-    Enemy enemy("Goblin", 2, 10);
-    combat(player, enemy, vector<Item>&inventory);
-    if (player.isAlive() == false) {
-        cout << "Game over man! Game over!\n\n";
-        exit(0);
-    }
-    else {
-        cout << "Congratulation on your first victory!";
-    }
+        cout << "'Have a good day!'";
+        char tutorial;
+        cout << "Hang on! before you head out there you may need a bit of information.\nDo you know how to fight in these lands? (y/n): ";
+        cin >> tutorial;
+        if (tutorial == 'n' || tutorial == 'N') {
+            cout << "Hi there, my name is Ryder and i will be the friendly voice in your head that helps you out!\n";
+            delay(2 * 1000);
+            cout << "Let me teach you some things about how combat works in the world of caspira.\n";
+            delay(2 * 1000);
+
+            cout << "\nChoose an action:\n";
+            cout << "[1] Attack\n";
+            cout << "[2] Defend\n";
+            cout << "[3] Use Item\n";
+            cout << "[4] Run\n\n";
+            delay(2 * 1000);
+
+            cout << "This is what you will see when you enter combat, \nYou don't need to choose anything right now i am just giving you an example!\n";
+            delay(3 * 1000);
+            cout << "Now, [1] Attack, should be self explanatory, \nyou will attack with whatever weapon you have equipped currently.\n";
+            delay(3 * 1000);
+            cout << "Next, [2] Defend, you will raise your weapon or shield into a defensive position, \nyou will reduce any incoming damage to '1 damage' for that round.\n";
+            delay(3 * 1000);
+            cout << "Next, [3] Use Item, this will open your inventory and let you choose from a list of useable items, such as potions, \nyou then give up your turn to use that item.\n";
+            delay(3 * 1000);
+            cout << "Finally, [4] Run, you will try to run away from the fight. \nit is only a percentage chance you will run away and if you fail the enemy will get a free attack on you.\n";
+            delay(3 * 1000);
+            cout << "Now that we have gone over the basics of the system, let's get you some hands on experience!\n\n";
+            delay(2 * 1000);
+            cout << "A Random Goblin appears in front of you! \nIt looks angry and hungry.\n";
+            delay(4 * 1000);
+        }
+
+        else {
+            cout << "\nWatch out!\n";
+            cout << "Ambush!\nYou were ambushed the moment you exited the town!\n";
+        }
+        Enemy enemy("Goblin", 2, 10);
+        Combat combat(player, enemy, inventory2);
+        combat.start();
+        if (player.isAlive() == false) {
+            cout << "Game over man! Game over!\n\n";
+            exit(0);
+        }
+        else {
+            cout << "Congratulation on your first victory!";
+        }
         return 0;
+    }
 }
 
 // Display merchant items
@@ -310,63 +270,71 @@ void displayShopInventory() {
     cout << "You have: " << gold << " gold pieces!\n\n";
 
     for (const auto& item : items) {
-        cout << item.quantity << " x " << item.name << " - " << item.price << " gold each\n";
+        cout << item.getQuantity() << " x " << item.getName() << " - " << item.getValue() << " gold each\n";
+    }
+}
+
+void displayBlacksmithInventory() {
+    cout << "\nBlacksmith items: \n\n";
+    cout << "You have: " << gold << " gold pieces!\n\n";
+
+    for (const auto& item : equipment) {
+        cout << item.getQuantity() << " x " << item.getName() << " - " << item.getValue() << " gold each\n";
     }
 }
 
 // Display player items
 void displayPlayerInventory() {
     cout << "\nYour items: \n";
-    for (const auto& item : inventory) {
-        cout << item.quantity << " x " << item.name << endl;
+    for (const auto& item : inventory2) {
+        cout << item.getQuantity() << " x " << item.getName() << endl;
     }
 }
 
-// Handle purchasing items
-int purchaseItem(const string& input) {
+int purchaseGeneralItem(const string& input) { // purchase items from the general store
     while (true) {
         bool found = false;
         for (auto& item : items) {
-            if (input == item.name) {
+            if (input == item.getName()) {
                 found = true;
                 cout << "How many would you like to purchase?\n";
-                int quantity;
-                cin >> quantity;
+                int howMany;
+                cin >> howMany;
 
                 // Validate quantity
-                if (quantity <= 0) {
+                if (howMany <= 0) {
                     cout << "Please enter a positive number!\n";
                     return 0;
                 }
 
-                int totalCost = item.price * quantity;
+                int totalCost = item.getValue() * howMany;
 
                 if (gold < totalCost) {
                     cout << "Not enough gold!\n";
                     return 0;
                 }
 
-                if (item.quantity < quantity) {
+                if (item.getQuantity() < howMany) {
                     cout << "Not enough stock available!\n";
                     return 0;
                 }
 
                 gold -= totalCost;
-                item.quantity -= quantity;
+                item.decreaseQuantity(howMany);
 
                 // Check if the item already exists in the inventory
-                auto invIter = std::find_if(inventory.begin(), inventory.end(), [&](const Item& invItem) {
-                    return invItem.name == item.name;
+                auto invIter = std::find_if(inventory2.begin(), inventory2.end(), [&](const Item& invItem) {
+                    return invItem.getName() == item.getName();
                     });
 
-                if (invIter != inventory.end()) {
-                    invIter->quantity += quantity;
+                if (invIter != inventory2.end()) {
+                    invIter->increaseQuantity(howMany);
                 }
                 else {
-                    inventory.push_back({ item.name, item.price, quantity }); // Add new item to inventory
+                    inventory2.push_back(Item(item.getName(), item.getEffect(), howMany, item.getValue(), item.isUsable(), item.mType)); // Add new item to inventory
                 }
 
-                cout << "You have purchased " << quantity << " " << item.name << "s!\n";
+                cout << "You have purchased " << howMany << " " << item.getName() << "s!\n";
 
                 // Ask if they want to purchase more
                 string again;
@@ -380,7 +348,7 @@ int purchaseItem(const string& input) {
                     cout << "What would you like to purchase?\n";
                     displayShopInventory();
                     cin >> newItem;
-                    return purchaseItem(newItem); // this should hopefully allow for a proper return to the start of the loop
+                    return purchaseGeneralItem(newItem); // this should hopefully allow for a proper return to the start of the loop
                 }
                 else {
                     return 1;  // Exit the purchase loop
@@ -396,45 +364,118 @@ int purchaseItem(const string& input) {
     }
 }
 
-// Handle selling items
-int sellItem(const string& input) {
+int purchaseEquipItem(const string& input) { //purchase items from the blacksmith
     while (true) {
         bool found = false;
-        for (const auto& item : items) {
-            if (input == item.name) {
+        for (auto& item : equipment) {
+            if (input == item.getName()) {
                 found = true;
-                cout << "How many would you like to sell?\n";
-                int quantity;
-                cin >> quantity;
+                cout << "How many would you like to purchase?\n";
+                int howMany;
+                cin >> howMany;
 
                 // Validate quantity
-                if (quantity <= 0) {
+                if (howMany <= 0) {
                     cout << "Please enter a positive number!\n";
                     return 0;
                 }
 
-                auto invIter = std::find_if(inventory.begin(), inventory.end(), [&](const Item& invItem) {
-                    return invItem.name == item.name;
+                int totalCost = item.getValue() * howMany;
+
+                if (gold < totalCost) {
+                    cout << "Not enough gold!\n";
+                    return 0;
+                }
+
+                if (item.getQuantity() < howMany) {
+                    cout << "Not enough stock available!\n";
+                    return 0;
+                }
+
+                gold -= totalCost;
+                item.decreaseQuantity(howMany);
+
+                // Check if the item already exists in the inventory
+                auto invIter = std::find_if(inventory2.begin(), inventory2.end(), [&](const Item& invItem) {
+                    return invItem.getName() == item.getName();
                     });
 
-                if (invIter != inventory.end() && invIter->quantity >= quantity) {
-                    gold += item.price * quantity;
-                    invIter->quantity -= quantity;
+                if (invIter != inventory2.end()) {
+                    invIter->increaseQuantity(howMany);
+                }
+                else {
+                    inventory2.push_back(Item(item.getName(), item.getEffect(), howMany, item.getValue(), item.isUsable(), item.mType)); // Add new item to inventory
+                }
+
+                cout << "You have purchased " << howMany << " " << item.getName() << "s!\n";
+
+                // Ask if they want to purchase more
+                string again;
+                string newItem;
+                cout << "Would you like to purchase anything else? (yes/no)\n";
+                cin >> again;
+
+                system("cls");
+
+                if (again == "yes") {
+                    cout << "What would you like to purchase?\n";
+                    displayShopInventory();
+                    cin >> newItem;
+                    return purchaseEquipItem(newItem); // this should hopefully allow for a proper return to the start of the loop
+                }
+                else {
+                    return 1;  // Exit the purchase loop
+                }
+
+                break;  // Exit the inner loop if we found a match
+            }
+        }
+        if (!found) {
+            cout << input << " is not a valid option!\n";
+            return 0;  // If item was not found, exit the function
+        }
+    }
+}
+
+
+int sellGeneralItem(const string& input) { //Selling items to the general store
+    while (true) {
+        bool found = false;
+        for (const auto& item : items) {
+            if (input == item.getName()) {
+                found = true;
+                cout << "How many would you like to sell?\n";
+                int howMany;
+                cin >> howMany;
+
+                // Validate quantity
+                if (howMany <= 0) {
+                    cout << "Please enter a positive number!\n";
+                    return 0;
+                }
+
+                auto invIter = std::find_if(inventory2.begin(), inventory2.end(), [&](const Item& invItem) {
+                    return invItem.getName() == item.getName();
+                    });
+
+                if (invIter != inventory2.end() && invIter->getQuantity() >= howMany) {
+                    gold += item.getValue() * howMany;
+                    invIter->decreaseQuantity(howMany);
 
                     auto shopIter = std::find_if(items.begin(), items.end(), [&](const Item& shopItem) {
-                        return shopItem.name == item.name;
+                        return shopItem.getName() == item.getName();
                         });
 
                     if (shopIter != items.end()) {
-                        shopIter->quantity += quantity;
+                        shopIter->increaseQuantity(howMany);
                     }
 
                     // If quantity drops to 0, remove the item from inventory
-                    if (invIter->quantity == 0) {
-                        inventory.erase(invIter);
+                    if (invIter->getQuantity() == 0) {
+                        inventory2.erase(invIter);
                     }
 
-                    cout << "You have successfully sold " << quantity << " " << item.name << "s!\n";
+                    cout << "You have successfully sold " << howMany << " " << item.getName() << "s!\n";
 
                     // Ask if they want to sell more
                     string again;
@@ -456,7 +497,7 @@ int sellItem(const string& input) {
                     break;
                 }
                 else {
-                    cout << "You don't have enough " << item.name << "\n";
+                    cout << "You don't have enough " << item.getName() << "\n";
                     system("pause");
                     return 0;
                 }
@@ -469,7 +510,81 @@ int sellItem(const string& input) {
         }
     }
 }
-void runShop() {
+
+int sellEquipItem(const string& input) { // sell items to the blacksmith
+    while (true) {
+        bool found = false;
+        for (const auto& item : equipment) {
+            if (input == item.getName()) {
+                found = true;
+                cout << "How many would you like to sell?\n";
+                int howMany;
+                cin >> howMany;
+
+                // Validate quantity
+                if (howMany <= 0) {
+                    cout << "Please enter a positive number!\n";
+                    return 0;
+                }
+
+                auto invIter = std::find_if(inventory2.begin(), inventory2.end(), [&](const Item& invItem) {
+                    return invItem.getName() == item.getName();
+                    });
+
+                if (invIter != inventory2.end() && invIter->getQuantity() >= howMany) {
+                    gold += item.getValue() * howMany;
+                    invIter->decreaseQuantity(howMany);
+
+                    auto shopIter = std::find_if(equipment.begin(), equipment.end(), [&](const Gear& shopItem) {
+                        return shopItem.getName() == item.getName();
+                        });
+
+                    if (shopIter != equipment.end()) {
+                        shopIter->increaseQuantity(howMany);
+                    }
+
+                    // If quantity drops to 0, remove the item from inventory
+                    if (invIter->getQuantity() == 0) {
+                        inventory2.erase(invIter);
+                    }
+
+                    cout << "You have successfully sold " << howMany << " " << item.getName() << "s!\n";
+
+                    // Ask if they want to sell more
+                    string again;
+                    string newItem;
+                    cout << "Would you like to sell anything else? (yes/no)\n";
+                    cin >> again;
+
+                    system("cls");
+
+                    if (again == "yes") {
+                        cout << "What would you like to sell?\n";
+                        displayPlayerInventory();
+                        cin >> newItem; // Get new input for the next sell
+                    }
+                    else {
+                        return 1;
+                    }
+
+                    break;
+                }
+                else {
+                    cout << "You don't have enough " << item.getName() << "\n";
+                    system("pause");
+                    return 0;
+                }
+            }
+        }
+        if (!found) {
+            cout << input << " is not a valid option!\n";
+            system("pause");
+            return 0;
+        }
+    }
+}
+
+void runGeneralStore() {
     while (true) {
         cout << gold << " Gold remaining\n\n";
         cout << "Welcome to the Caspiran general store! What can I do for you today?\n buy \n sell \n inventory \n quit \n\n";
@@ -492,7 +607,7 @@ void runShop() {
             string input;
             cout << "Type the whole word: ";
             cin >> input;
-            purchaseItem(input);
+            purchaseGeneralItem(input);
             system("pause");
             system("cls");
         }
@@ -503,7 +618,51 @@ void runShop() {
             string input;
             cout << "Type the whole word: ";
             cin >> input;
-            sellItem(input);
+            sellGeneralItem(input);
+            system("pause");
+            system("cls");
+        }
+        else {
+            cout << "Invalid option! Please enter 'buy', 'sell', 'inventory', or 'quit'.\n";
+        }
+    }
+}
+
+void runBlacksmith() {
+    while (true) {
+        cout << gold << " Gold remaining\n\n";
+        cout << "Welcome to the Hooves and Steel! What can I do for you today?\n[1]Buy \n[2]Sell \n[3]Inventory \n[4]Quit \n\n";
+        cout << "Type the whole word: ";
+        cin >> intent;
+
+        if (intent == "quit") {
+            break; // Exit the loop if user wants to quit
+        }
+        if (intent == "inventory") {
+            system("cls");
+            displayPlayerInventory();
+            continue; // Go back to the start of the loop
+        }
+
+        if (intent == "buy") {
+            system("cls");
+            cout << "What would you like to purchase?\n";
+            displayBlacksmithInventory();
+            string input;
+            cout << "Type the whole word: ";
+            cin >> input;
+            purchaseEquipItem(input);
+            system("pause");
+            system("cls");
+        }
+        else if (intent == "sell") {
+            system("cls");
+            cout << "What would you like to sell?\n";
+            displayPlayerInventory();
+            string input;
+            cout << "Type the whole word: ";
+            cin >> input;
+            sellEquipItem(input);
             system("pause");
             system("cls");
         }
@@ -588,116 +747,88 @@ Character createCharacter() {
     }
 }
 
-void exploreTown() {
-    string currentRoom = "Town Square"; // Start at the town square
-    while (true) {
-        // Find the current room
-        auto roomIt = std::find_if(rooms.begin(), rooms.end(), [&](const Room& room) {
-            return room.name == currentRoom;
-            });
+Room* createTown() {
+    // Create rooms
+    Room* tavern = new Room("Tavern", "A lively tavern filled with the sounds of laughter and music.");
+    Room* townCenter = new Room("Town Center", "The bustling center of town, with shops and stalls.");
+    Room* generalStore = new Room("General Store", "A shop filled with various supplies and goods.");
+    Room* blacksmith = new Room("Blacksmith", "The forge is hot, and the blacksmith is hard at work.");
 
-        if (roomIt != rooms.end()) {
-            cout << roomIt->description << endl; // Describe the current room
-            cout << "Exits: \n";
-            for (size_t i = 0; i < roomIt->exits.size(); ++i) {
-                cout << "[" << (i + 1) << "] " << roomIt->exits[i] << endl; // Numbered exits
-            }
-            cout << "[0] Exit Town\n"; // Option to exit town
+    // Create roads
+    Room* roadEast = new Room("East Road", "A dusty road leading east out of town.");
+    Room* roadWest = new Room("West Road", "A quiet road leading west towards the forest.");
+    Room* roadNorth = new Room("North Road", "A path leading north towards the mountains.");
 
-            cout << "Where would you like to go? (Enter the number): ";
-            int choice;
-            cin >> choice;
+    // Set connections
+    tavern->AddExit(townCenter);
+    townCenter->AddExit(tavern);
 
-            // Handle exiting
-            if (choice == 0) {
-                break; // Exit the loop
-            }
+    townCenter->AddExit(generalStore);
+    generalStore->AddExit(townCenter);
 
-            // Check if the choice is valid
-            if (choice > 0 && choice <= roomIt->exits.size()) {
-                currentRoom = roomIt->exits[choice - 1]; // Move to the chosen room
-                if (roomIt->action) {
-                    roomIt->action(); // Call the room's specific action if it exists
-                }
-            }
-            else {
-                cout << "You can't go there!\n";
-            }
+    townCenter->AddExit(blacksmith);
+    blacksmith->AddExit(townCenter);
+
+    townCenter->AddExit(roadEast);
+    roadEast->AddExit(townCenter);
+
+    townCenter->AddExit(roadWest);
+    roadWest->AddExit(townCenter);
+
+    townCenter->AddExit(roadNorth);
+    roadNorth->AddExit(townCenter);
+
+    return tavern; // Start in the tavern
+}
+
+void handleRoomEvents(Room* currentRoom) {
+    if (currentRoom->IsFirstVisit()) { // Check if it's the first visit
+        if (currentRoom->GetName() == "Tavern") {
+            cout << "You wake up in your cozy bed at the tavern, the smell of breakfast wafting through the air.\n";
+            delay(3 * 1000);
+            cout << "You can hear the chatter of patrons and the clinking of mugs, but your head is pounding.\n";
+            delay(3 * 1000);
+            cout << "As you sit up, a wave of nausea hits you, and you remember last night's revelry.\n";
+            delay(3 * 1000);
+            cout << "You feel dehydrated and your mouth is dry, you crave water.\n";
+            delay(3 * 1000);
+            cout << "A faint light coming through the window only intensifies your headache.\n";
+            delay(3 * 1000);
+            cout << "You get up slowly and gather your things.\n";
+            delay(1 * 1000);
+            displayPlayerInventory();
+            delay(5 * 1000);
+            cout << "You meander your way out of the room and down the stairs to the tavern.\n\n";
+            delay(2 * 1000);
+            cout << "'Rough night eh? Well, I would have a hangover too if I drank " << std::rand() % 50 + 1 << " bottles of rum as well.'\n\n";
+            delay(2 * 1000);
         }
+        else if (currentRoom->GetName() == "General Store") { // Handle General Store
+            cout << "The general store is bustling with customers looking for supplies.\n";
+            // Add general store-specific interactions here
+        }
+        else if (currentRoom->GetName() == "Blacksmith") { // Handle Blacksmith
+            cout << "You see the blacksmith hammering away at a piece of glowing metal.\n";
+            // Add blacksmith-specific interactions here
+        }
+        // Add more room-specific logic as needed
     }
 }
 
-void combat(Character& player, Enemy& enemy, vector<Item>& inventory) {
-    bool inCombat = true;
-    cout << enemy.getName() << " snarls at you!\n";
+void ChooseExit(Room*& currentRoom) {
+    currentRoom->ListExits();
 
-    while (inCombat && player.isAlive() && enemy.isAlive()) {
+    int choice = 0;
+    cout << "Choose an exit (enter the number): ";
+    cin >> choice;
 
-        cout << "\nChoose an action:\n";
-        cout << "[1] Attack\n";
-        cout << "[2] Defend\n";
-        cout << "[3] Use Item\n";
-        cout << "[4] Run\n";
-
-        int choice;
-        cin >> choice;
-
-        switch (choice) {
-        case 1: // Attack
-        {
-            int damageToEnemy = player.attack();
-            cout << player.getName() << " attacks " << enemy.getName() << " for " << damageToEnemy << " damage!" << endl;
-            enemy.takeDamage(damageToEnemy);
-            if (!enemy.isAlive()) {
-                cout << enemy.getName() << " has been defeated!" << endl;
-                inCombat = false; // Exit combat
-            }
-        }
-        break;
-
-        case 2: // Defend
-        {
-            cout << player.getName() << " defends this turn!" << endl;
-            // Implement defense logic (e.g., reduce damage from the next attack)
-            continue; // Skip enemy's turn if defending
-        }
-        break;
-
-        case 3: // Use Item
-        {
-            cout << "Using an item is not implemented yet.\n"; // Placeholder
-            // Implement inventory management here if needed.
-        }
-        break;
-
-        case 4: // Run
-        {
-            cout << player.getName() << " attempts to run away!" << endl;
-            if (rand() % 2 == 0) { // 50% chance to escape
-                cout << player.getName() << " successfully escaped!" << endl;
-                inCombat = false; // Exit combat
-            }
-            else {
-                cout << "Failed to escape!" << endl;
-            }
-        }
-        break;
-
-        default:
-            cout << "Invalid choice! Please choose again.\n";
-            continue; // Restart the loop
-        }
-
-        // Enemy's turn (if combat continues)
-        if (inCombat && enemy.isAlive()) {
-            int damageToPlayer = enemy.getAttack();
-            player.takeDamage(damageToPlayer); // Use player variable correctly
-            cout << enemy.getName() << " attacks " << player.getName() << " for " << damageToPlayer << " damage!" << endl;
-
-            if (!player.isAlive()) {
-                cout << player.getName() << " has been defeated!" << endl;
-                inCombat = false; // Exit combat
-            }
-        }
+    // Validate input
+    if (choice < 1 || choice > currentRoom->GetNumberOfExits()) {
+        cout << "Invalid choice. Please try again.\n";
+        return;
     }
+
+    Room* nextRoom = currentRoom->GetExits()[choice - 1];
+    currentRoom = nextRoom;
+    cout << "You move to: " << currentRoom->GetName() << "\n";
 }
