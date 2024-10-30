@@ -10,6 +10,7 @@
 using std::cout;
 using std::cin;
 using std::vector;
+class Effect;
 
 class Combat {
 public:

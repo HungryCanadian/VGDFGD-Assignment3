@@ -45,6 +45,10 @@ Effect Item::getEffect() const {
 	return mEffect;
 }
 
+ItemType Item::getType() const {
+	return mType;
+}
+
 void Item::decreaseQuantity(int howMany) {
 	if (howMany > 0 && mQuantity >= howMany) {
 		mQuantity -= howMany;

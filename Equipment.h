@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
-#include "Character.h"
 #include "Item.h"
 
+using std::string;
 
 class Gear : public Item {
 public:

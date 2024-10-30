@@ -2,13 +2,13 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include "Character.h"
 #include "Item.h"
 #include "Equipment.h"
 class Item;
 
 using std::vector;
 using std::string;
+using std::cin;
 
 class Inventory {
 public:
@@ -17,6 +17,11 @@ public:
     void ListItems() const;
     void EquipGear(Gear& gear);
     void UnequipGear(Gear& gear);
+	void openInventory(); //function to open the inventory  
+	vector<Gear> gearItems; //vector to store gear items
+
+    Gear* GetGearByIndex(int index); //get gear by index
+    int getGearCount() const; //return the number of gear items
 
 private:
     vector<Item> items;

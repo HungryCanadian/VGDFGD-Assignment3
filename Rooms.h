@@ -6,6 +6,7 @@
 using std::string;
 using std::vector;
 using std::cout;
+class Inventory;
 
 class Room {
 public:
@@ -14,8 +15,10 @@ public:
 	vector<Room*> GetExits();
 	int GetNumberOfExits();
 	void ListExits();
-
+	void HandlePlayerAction();
 	void DisplayRoom();
+	void onEnter();
+	void onExit();
 	string GetName();
 	bool IsFirstVisit();
 

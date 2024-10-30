@@ -8,7 +8,8 @@
 #include "Race.h"         
 #include "CharacterClass.h"
 #include "Item.h"
-#include "Equipment.h"
+#include "Inventory.h"
+
 
 
 class Inventory;
@@ -24,8 +25,8 @@ public:
 
     abilityScores mBaseScores;
     abilityScores mBonuses;
-
-
+    //make a default constructor
+    Character() : mBaseScores(0, 0, 0, 0, 0, 0), mBonuses(0, 0, 0, 0, 0, 0), mHealth(0), mDamage(0), mMaxHealth(0), mName(""), mRace("", 0, 0, 0, 0, 0, 0), mType("", 0), inventory(nullptr) {}
     // Parameterized constructor
     Character(const string& characterName, const Race& characterRace, const CharacterClass& characterClass, const abilityScores& scores);
 
