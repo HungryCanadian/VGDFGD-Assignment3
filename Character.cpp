@@ -149,7 +149,12 @@ void Character::Levelup() {
     mMaxHealth += mType.defaultHealth;
     mHealth = mMaxHealth;
     mDamage += 1;
-    cout << "You have leveled up! You are now level " << mLevel << "!\n";
+	cout << "\n\n";
+    cout << "  |~~~~~~~~~~~~~~~~~~~~|" << mLevel << "!\n";
+    cout << "  |     LEVEL UP!      | " << "\n";
+    cout << "  |~~~~~~~~~~~~~~~~~~~~| " << "\n";
+	cout << "\n\n You are now Level " << mLevel << "!\n\n";
+	cout << "You have gained 1 damage!\nYour max health has increased to " << mMaxHealth << "!\nYou have also been Fully healed!\n";
 }
 
 int Character::addExp(int exp) {
