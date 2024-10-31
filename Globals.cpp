@@ -1,3 +1,3 @@
 #include "Globals.h"
 
-Character player;
+//Character player;

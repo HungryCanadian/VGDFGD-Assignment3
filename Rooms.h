@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "Character.h"
 
 using std::string;
 using std::vector;
@@ -10,17 +11,18 @@ class Inventory;
 
 class Room {
 public:
-	Room(string name = "Empty Room", string description = "This is an empty room.", bool locked = false);
+	Room(string name = "Empty Room", string description = "This is an empty room.", bool locked = false, float = 0.0);
 	void AddExit(Room* roomToAdd);
 	vector<Room*> GetExits();
 	int GetNumberOfExits();
 	void ListExits();
-	void HandlePlayerAction();
+	void HandlePlayerAction(Character& player);
 	void DisplayRoom();
-	void onEnter();
-	void onExit();
 	string GetName();
 	bool IsFirstVisit();
+	Room* ChooseExit();
+	Room* createTown();
+	void HandleAttack(Character& player);
 
 	//AddEntity(Entity* entity);
 	//vector<Entity*> GetEntities();
@@ -32,6 +34,7 @@ private:
 	//TODO
 	//add a vector of entitities that will store any/all entities (NPCs/Enemies) that are in this room.
 	vector<Room*> mExits;
+	float mAttackChance;
 
 
 	//Extra detail --> impliment if time allows, but not REQUIRED

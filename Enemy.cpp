@@ -1,8 +1,8 @@
 #include "Enemy.h"
 
 // Constructor
-Enemy::Enemy(const string& name, int damage, int health)
-    : mName(name), mDamage(damage), mHealth(health) {}
+Enemy::Enemy(const string& name, int damage, int health, int gold, int experience)
+    : mName(name), mDamage(damage), mHealth(health), mGold(gold), mExperience(experience) {}
 
 // Attack method
 int Enemy::Attack() const {
@@ -27,6 +27,14 @@ void Enemy::takeDamage(int damage) {
 // Check if enemy is alive
 bool Enemy::isAlive() const {
     return mHealth > 0;
+}
+
+int Enemy::getGold() const {
+	return mGold;
+}
+
+int Enemy::getExp() const {
+	return mExperience;
 }
 
 // Getter for the enemy's name

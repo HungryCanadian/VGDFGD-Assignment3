@@ -1,18 +1,27 @@
 #pragma once
 #include <string>
 #include "Item.h"
+#include "Character.h"
+
+
+
 
 using std::string;
 
 class Gear : public Item {
 public:
-	Gear(const string& name, const Effect& effect, int quantity, int value, bool consumable, ItemType type, bool equipped = false);
-
+	Gear(); // Default constructor
+	Gear(const string& name, const Effect& effect, int quantity, int value, bool consumable, ItemType type, bool equipped);
+	int totalDamageReduction = 0;
 	void equip(); //function to donn the gear
 	void unequip(); //function to doff the gear
-	bool isEquipped() const; //checking if the gear is equipped or not
+	int addDamageReduction(int amount);
+	int removeDamageReduction(int amount);
+	int getTotalDamageReduction() const;
+	bool isEquipped() const;
+
 
 private:
+	//int totalDamageReduction;
 	bool equipped;
 };
-

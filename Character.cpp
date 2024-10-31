@@ -2,13 +2,29 @@
 #include "Inventory.h"
 
 
+vector<Gear> equippedGear{
+}; // Initialize the equipped gear vector
+
 // Constructor implementation
-Character::Character(const string& characterName, const Race& characterRace, const CharacterClass& characterClass, const abilityScores& scores)
-    : mName(characterName), mRace(characterRace), mType(characterClass), mBaseScores(scores), mBonuses(0, 0, 0, 0, 0, 0) {
+Character::Character(const string& characterName, const Race& characterRace, const CharacterClass& characterClass,
+    const abilityScores& scores, int level, int experience, int expToLevel, int gold) :
+    mName(characterName),
+    mRace(characterRace),
+    mType(characterClass),
+    mBaseScores(scores),
+    mBonuses(0, 0, 0, 0, 0, 0),
+    mHealth(0),
+    mMaxHealth(0),
+    mLevel(level),
+    mExperience(experience),
+    mExpToLevel(expToLevel > 0 ? expToLevel : 100), // Set a default value if 0
+    mGold(gold)
+{
     mBaseScores.applyRaceBonuses(mRace.abilityIncrease);
     calculateBonuses();
     calculateHealth();
 }
+
 
 void Character::calculateBonuses() {
     mBonuses.strength = calculateBonus(mBaseScores.strength);
@@ -26,10 +42,17 @@ void Character::calculateHealth() {
 }
 
 void Character::takeDamage(int damage) {
-    int effectiveDamage = damage - totalDamageReduction; // totalDamageReduction is calculated based on equipped armor and if the player chose to defend or not.
-    if (effectiveDamage < 0) effectiveDamage = 0; //prevent negative damage
+    int effectiveDamage = damage;
+    if (effectiveDamage < 0) effectiveDamage = 0; // Prevent negative damage
+
     mHealth -= effectiveDamage;
+    cout << "Your armor reduced it to " << effectiveDamage << " damage!\n"; // "Your armor reduced it to x damage!"
+
     if (mHealth < 0) mHealth = 0;
+    cout << getName() << "'s remaining health: " << mHealth << "\n"; // Debugging output for remaining health
+    cout << " ______   ______   ______   ______   ______   ______ \n";
+	cout << "/_____/  /_____/  /_____/  /_____/  /_____/  /_____/ \n";
+
 }
 
 bool Character::isAlive() const {
@@ -63,9 +86,99 @@ int Character::getAttack() const {
     return mDamage;
 }
 
-void Character::addDamageReduction(int amount) {
-    totalDamageReduction += amount;
+
+void Character::AddItemToInventory(Gear& gear) {
+    inventory->AddItem(gear);
 }
+
+void Character::RemoveItemFromInventory(Gear& gear) {
+    inventory->RemoveItem(gear);
+}
+
+void Character::ListInventory() const {
+    inventory->ListGearItems();
+}
+
+void Character::EquipGear(Gear& gear) {
+    // Check if the gear is already equipped
+    if (gear.isEquipped()) {
+        cout << gear.getName() << " is already equipped!\n";
+        return;
+    }
+
+    // Equip the gear
+    gear.equip(); // Call the gear's equip method
+
+    // After successfully equipping, add it to the equippedGear vector
+    equippedGear.push_back(gear); // Copy the gear into the vector
+    cout << gear.getName() << " has been added to your equipped gear.\n";
+}
+
+
+void Character::UnequipGear(Gear& gear) {
+    // Find the gear in the equippedGear vector
+    for (auto it = equippedGear.begin(); it != equippedGear.end(); ++it) {
+        if (it->getName() == gear.getName() && it->isEquipped()) {
+            it->unequip(); // Call the unequip method on the gear
+            equippedGear.erase(it); // Remove it from the equipped gear vector
+            return;
+        }
+    }
+    cout << gear.getName() << " is not equipped!\n";
+}
+
+int Character::getTotalDamageReduction() const {
+    int totalReduction = 0;
+    for (const auto& gear : equippedGear) {
+        if (gear.isEquipped()) {
+            totalReduction += gear.getTotalDamageReduction();
+        }
+    }
+    return totalReduction;
+}
+void Character::Levelup() {
+    mLevel++;
+    mExperience = 0;
+    mExpToLevel *= 2;
+    mMaxHealth += mType.defaultHealth;
+    mHealth = mMaxHealth;
+    mDamage += 1;
+    cout << "You have leveled up! You are now level " << mLevel << "!\n";
+}
+
+int Character::addExp(int exp) {
+    mExperience += exp;
+    if (mExperience >= mExpToLevel) {
+        Levelup();
+    }
+    return mExperience;
+}
+
+int Character::getExp() {
+    return mExperience;
+}
+
+int Character::getGold() {
+    return mGold;
+}
+
+int Character::addGold(int amount) {
+    mGold += amount;
+    return mGold;
+
+}
+
+const vector<Gear>& Character::getGearItems() const {
+    return equippedGear;
+}
+
+
+int Character::subtractGold(int amount) {
+    mGold -= amount;
+    return mGold;
+
+}
+
 
 void Character::removeDamageReduction(int amount) {
     totalDamageReduction -= amount;
@@ -74,25 +187,12 @@ void Character::removeDamageReduction(int amount) {
     }
 }
 
-void Character::AddItemToInventory(const Item& item) {
-    inventory->AddItem(item);
+void Character::addDamageReduction(int amount) {
+    totalDamageReduction += amount;
 }
 
-void Character::RemoveItemFromInventory(const std::string& itemName) {
-    inventory->RemoveItem(itemName);
-}
 
-void Character::ListInventory() const {
-    inventory->ListItems();
-}
 
-void Character::EquipGear(Gear& gear) {
-    inventory->EquipGear(gear);
-}
-
-void Character::UnequipGear(Gear& gear) {
-    inventory->UnequipGear(gear);
-}
 
 // Calculate the bonus based on the score (Member function)
 int Character::calculateBonus(int score) const {

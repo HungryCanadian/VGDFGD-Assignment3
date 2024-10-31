@@ -8,15 +8,17 @@
 #include "Race.h"         
 #include "CharacterClass.h"
 #include "Item.h"
-#include "Inventory.h"
+#include "Equipment.h"
 
 
 
 class Inventory;
+class Gear;
 
 
 using std::cout;
 using std::cin;
+using std::vector;
 
 
 
@@ -28,7 +30,9 @@ public:
     //make a default constructor
     Character() : mBaseScores(0, 0, 0, 0, 0, 0), mBonuses(0, 0, 0, 0, 0, 0), mHealth(0), mDamage(0), mMaxHealth(0), mName(""), mRace("", 0, 0, 0, 0, 0, 0), mType("", 0), inventory(nullptr) {}
     // Parameterized constructor
-    Character(const string& characterName, const Race& characterRace, const CharacterClass& characterClass, const abilityScores& scores);
+    Character(const string& characterName, const Race& characterRace,
+        const CharacterClass& characterClass, const abilityScores& scores,
+        int level = 1, int experience = 0, int expToLevel = 100, int gold = 150);
 
     void calculateBonuses();
     void calculateHealth();
@@ -38,26 +42,41 @@ public:
     string getName() const;
     int getHealth();
     int getMaxHealth();
+	int getExp();
+	void addDamageReduction(int amount);
+    void removeDamageReduction(int amount);
+	int getGold();
+	int addGold(int amount);
+	int subtractGold(int amount);
     int heal(int amount);
+    //void toggleEquip(Gear& gear);
     int getAttack() const;
     void displayStats() const;
+    void Levelup();
     void EquipGear(Gear& gear); // To equip armor
     void UnequipGear(Gear& gear); // To unequip armor
-    void addDamageReduction(int amount); // To add to damage reduction
-    void removeDamageReduction(int amount); // To remove from damage reduction
-    void AddItemToInventory(const Item& item); // Method to add an item
-    void RemoveItemFromInventory(const std::string& itemName); // Method to remove an item
+    void AddItemToInventory(Gear& gear); // Method to add an item
+    void RemoveItemFromInventory(Gear& gear); // Method to remove an item
     void ListInventory() const; // Method to list items in inventory
+	int getTotalDamageReduction() const; // Method to get total damage reduction
+    const vector<Gear>& getGearItems() const;
+    int addExp(int amount);
+  
 
 
 private:
     Inventory* inventory;
-    int totalDamageReduction = 0;
     int calculateBonus(int score) const;
+    int totalDamageReduction;
     int mHealth;
     int mDamage;
     int mMaxHealth;
+    int mGold = 150;
+	int mExperience = 0;
+	int mExpToLevel = 100;
+    int mLevel = 1;
     string mName;
     Race mRace;
     CharacterClass mType;
+	vector<Gear> equippedGear;
 };

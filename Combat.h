@@ -6,6 +6,7 @@
 #include "Inventory.h"
 #include <vector>
 #include <iostream>
+#include "Equipment.h"
 
 using std::cout;
 using std::cin;

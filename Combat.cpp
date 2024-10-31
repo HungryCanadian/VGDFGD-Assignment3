@@ -1,4 +1,6 @@
 #include "Combat.h"
+#include "Character.h"
+
 
 Combat::Combat(Character& player, Enemy& enemy, vector<Item>& inventory)
 	:player(player), enemy(enemy), inventory2(inventory) { }
@@ -65,13 +67,24 @@ void Combat::start() {
 }
 
 void Combat::enemyTurn() {
-	int damageToPlayer = enemy.getAttack();
-	player.takeDamage(damageToPlayer);
-	cout << enemy.getName() << " attacks you for " << damageToPlayer << " damage!\n";
+    // Calculate damage to the player
+    int damageReduction = player.getTotalDamageReduction();
+    int damageToPlayer = enemy.getAttack() - damageReduction;
 
-	if (!player.isAlive()) {
-		cout << player.getName() << " has been defeated!\n";
-	}
+    // Ensure damage is not negative
+    if (damageToPlayer < 0) {
+        damageToPlayer = 0; // No damage if reduction exceeds attack
+    }
+
+    // Apply damage to the player
+    player.takeDamage(damageToPlayer);
+
+    // Output the attack message
+    cout << enemy.getName() << " attacks you for " << damageToPlayer << " damage!\n";
+
+    if (!player.isAlive()) {
+        cout << player.getName() << " has been defeated!\n";
+    }
 }
 
 void Combat::useItem() {
