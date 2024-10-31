@@ -111,15 +111,21 @@ void Inventory::ListEquippedItems(Character& player) {
     cout << "Equipped Gear Items:\n";
     const auto& equippedItems = player.getGearItems();
 
-    int totalDamageReduction = 0; // Initialize total damage reduction
+    int totalDamageReduction = 0;// Initialize total damage reduction
+    int totalDamage = 0;
 
     for (size_t i = 0; i < equippedItems.size(); ++i) {
         cout << "[" << (i + 1) << "] " << equippedItems[i].getName() << "\n";
         totalDamageReduction += equippedItems[i].getTotalDamageReduction(); // Sum up the damage reductions
     }
+    for (size_t i = 0; i < equippedItems.size(); ++i) {
+        cout << "[" << (i + 1) << "] " << equippedItems[i].getName() << "\n";
+        totalDamage += equippedItems[i].getTotalDamage(); // Sum up the damage bonuses
+    }
 
     // Display total damage reduction
     cout << "Total Damage Reduction from Equipped Items: " << totalDamageReduction << "\n";
+    cout << "Total Damage from Equipped Items: " << totalDamage << "\n";
 }
 
 void Inventory::EquipGear(Gear& gear) {

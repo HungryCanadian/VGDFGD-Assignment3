@@ -39,6 +39,17 @@ int Gear::getTotalDamageReduction() const {
     return totalReduction; // Return the total damage reduction from this gear
 }
 
+int Gear::getTotalDamage() const {
+    int totalDamage = 0;
+
+    // Assuming this method is called on a Gear object that may be part of equipped items
+    if (isEquipped()) {
+        totalDamage += getEffect().damage; // Add this gear's damage reduction
+    }
+
+    return totalDamage; // Return the total damage reduction from this gear
+}
+
 void Gear::equip() {
     if (!equipped && getQuantity() > 0) {
         equipped = true;

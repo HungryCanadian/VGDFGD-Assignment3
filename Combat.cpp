@@ -22,7 +22,7 @@ void Combat::start() {
 		switch (choice) {
 		case 1: //Attack
 		{
-			int damageToEnemy = player.attack();
+			int damageToEnemy = player.getAttack();
 			cout << player.getName() << " attacks " << enemy.getName() << " for " << damageToEnemy << " damage!\n";
 			enemy.takeDamage(damageToEnemy);
 			if (!enemy.isAlive()) {

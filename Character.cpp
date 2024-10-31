@@ -59,10 +59,6 @@ bool Character::isAlive() const {
     return mHealth > 0;
 }
 
-int Character::attack() const {
-    return rand() % 3 + (mBonuses.strength + 1); // Example attack damage calculation
-}
-
 string Character::getName() const {
     return mName;
 }
@@ -83,7 +79,17 @@ int Character::heal(int amount) {
 }
 
 int Character::getAttack() const {
-    return mDamage;
+    int baseDamage = mDamage + mBonuses.strength + 1; // Base damage calculation
+    int damageFromGear = 0;
+
+    // Iterate through equipped gear to find damage increases
+    for (const auto& gear : equippedGear) {
+        if (gear.isEquipped()) {
+            damageFromGear += gear.getEffect().damage; // Add gear's damage increase
+        }
+    }
+
+    return baseDamage + damageFromGear; // Return total damage
 }
 
 

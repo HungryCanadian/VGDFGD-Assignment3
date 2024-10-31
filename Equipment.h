@@ -18,6 +18,7 @@ public:
 	int addDamageReduction(int amount);
 	int removeDamageReduction(int amount);
 	int getTotalDamageReduction() const;
+	int getTotalDamage() const;
 	bool isEquipped() const;
 
 
