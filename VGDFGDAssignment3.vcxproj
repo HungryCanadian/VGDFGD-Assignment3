@@ -133,7 +133,6 @@
     <ClCompile Include="Combat.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Equipment.cpp" />
-    <ClCompile Include="Globals.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Race.cpp" />
@@ -148,7 +147,6 @@
     <ClInclude Include="Effect.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Equipment.h" />
-    <ClInclude Include="Globals.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Race.h" />

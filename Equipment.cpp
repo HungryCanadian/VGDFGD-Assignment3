@@ -1,15 +1,24 @@
 
 #include "Equipment.h"
-#include "Globals.h"
 
 
-extern Character player;
+class Character;
 
 Gear::Gear()
     : Item("Default Gear", Effect(), 1, 0, false, ItemType::Gear), // Initialize base Item
     totalDamageReduction(0), // Default total damage reduction
     equipped(false) // Default not equipped
 {
+}
+bool Gear::operator==(const Gear& other) const {
+    return (this->getName() == other.getName() &&
+        //this->getEffect() == other.getEffect() &&
+        this->getQuantity() == other.getQuantity() &&
+        this->getValue() == other.getValue() &&
+        /*this->isConsumable() == other.isConsumable() &&*/
+        this->getType() == other.getType() &&
+        this->totalDamageReduction == other.totalDamageReduction &&
+        this->equipped == other.equipped);
 }
 
 Gear::Gear(const string& name, const Effect& effect, int quantity, int value, bool consumable, ItemType type, bool equipped)
@@ -50,7 +59,7 @@ int Gear::getTotalDamage() const {
     return totalDamage; // Return the total damage reduction from this gear
 }
 
-void Gear::equip() {
+void Gear::equip(Character& player) {
     if (!equipped && getQuantity() > 0) {
         equipped = true;
         int reductionAmount = getEffect().damageReduction;
@@ -62,7 +71,7 @@ void Gear::equip() {
     }
 }
 
-void Gear::unequip() {
+void Gear::unequip(Character& player) {
     if (equipped) {
         equipped = false;
         player.removeDamageReduction(getEffect().damageReduction);

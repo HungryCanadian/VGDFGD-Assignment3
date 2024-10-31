@@ -20,7 +20,6 @@
 #include "Equipment.h"
 #include "Effect.h"
 #include "Combat.h"
-#include "Globals.h"
 #include "Inventory.h"
 
 using std::cout;
@@ -57,57 +56,12 @@ Inventory inventory;
 
 bool skipDelays = false; // Global variable to track delay preference
 
-abilityScores generateRandomScores() {
-    return abilityScores(
-        std::rand() % 11 + 8,  // Strength
-        std::rand() % 11 + 8,  // Dexterity
-        std::rand() % 11 + 8,  // Constitution
-        std::rand() % 11 + 8,  // Intelligence
-        std::rand() % 11 + 8,  // Wisdom
-        std::rand() % 11 + 8   // Charisma
-    );
-}
 
-Character createCharacter();
+
+
 
 // Races
-vector<Race> races = {
-    { "Dwarf", 0, 0, 2, 0, 0, 0},
-    { "Elf", 0, 2, 0, 0, 0, 0},
-    { "Halfling",0, 2, 0, 0, 0, 0},
-    { "Human", 0, 0, 1, 0, 2, 0},
-    { "Gnome", 0, 0, 0, 2, 0, 0},
-    { "Tiefling", 0, 0, 0, 1, 0, 2}
-};
 
-vector<string> raceFlavorText = {
-"Dwarves are stout and hardy. +2 con\n",
-"Elves are graceful and agile. +2 Dex\n",
-"Halflings are cheerful and nimble. +2 Dex\n",
-"Humans are versatile and adaptable. +2 Wis +1 Con\n",
-"Gnomes are curious and inventive. +2 Int\n",
-"Tieflings carry the legacy of fiendish ancestry. +2 Cha +1 Int\n"
-};
-
-vector<string> classFlavorText = {
-"Fighters are warriors who have trained extensively in the art of combat.\n",
-"Paladins are holy warriors dedicated to upholding justice and righteousness.\n",
-"Druids are guardians of nature, able to harness its power and shape-shift into animals.\n",
-"Warlocks forge pacts with powerful entities to gain magical abilities.\n",
-"Sorcerers possess innate magical talent, drawing on their bloodline to unleash powerful spells.\n",
-"Wizards are scholars of the arcane, dedicating their lives to studying ancient tomes and mastering complex spells.\n",
-"Rangers are skilled hunters and trackers, adept at surviving in the wild.\n"
-};
-
-vector<CharacterClass> charClass = {
-    { "Fighter", 10 },
-    { "Paladin", 12 },
-    { "Druid", 8 },
-    { "Warlock", 6 },
-    { "Sorcerer", 6 },
-    { "Wizard", 6 },
-    { "Ranger", 10 }
-};
 
 void delay(int milliseconds) {
     if (!skipDelays) {
@@ -181,14 +135,14 @@ int main()
     delay(3 * 1000);
     cout << "\nLet's get a bit more information on our Hero!\n\n";
 
-    Character player(createCharacter());
+
+	Character player = player.createCharacter();
 
 
     cout << "Now " << player.getName() << ", let's start your adventure!\n\n";
     while (true) {
         handleRoomEvents(currentRoom);
-        currentRoom->DisplayRoom(); // Show the current room
-        currentRoom->HandlePlayerAction(player); // Handle player actions
+        currentRoom->HandlePlayerAction(player, inventory); // Handle player actions
     }
     
 
@@ -249,80 +203,7 @@ int main()
     }
 
 
-Character createCharacter() {
-    string characterName;
-    int chosenRace;
-    int chosenClass;
 
-    // Get character name
-    while (true) {
-        cout << "Enter your character's name (1-10 characters): ";
-        cin >> characterName;
-
-        if (characterName.empty() || characterName.length() > 10) {
-            cout << "Invalid name. Name must be between 1 and 10 characters.\n";
-        }
-        else {
-            break; // Valid name
-        }
-    }
-
-    cout << characterName << ", pleased to meet you! Now, what are you?\n\n";
-
-    // Choose a race
-    while (true) {
-        cout << "Races:\n[1] Dwarf\n[2] Elf\n[3] Halfling\n[4] Human\n[5] Gnome\n[6] Tiefling\n\n";
-        cout << "Please choose a Race (1-" << races.size() << "): ";
-        cin >> chosenRace;
-
-        if (chosenRace < 1 || chosenRace > races.size()) {
-            cout << "Invalid choice. Please try again.\n";
-        }
-        else {
-            chosenRace--; // Adjust for zero-based index
-            cout << "\n" << raceFlavorText[chosenRace] << "\n"; // Display flavor text
-            break; // Valid choice
-        }
-    }
-
-    // Choose a class
-    while (true) {
-        cout << "Classes:\n[1] Fighter\n[2] Paladin\n[3] Druid\n[4] Warlock\n[5] Sorcerer\n[6] Wizard\n[7] Ranger\n\n";
-        cout << "Please choose a Class (1-" << charClass.size() << "): ";
-        cin >> chosenClass;
-
-        if (chosenClass < 1 || chosenClass > charClass.size()) {
-            cout << "Invalid choice. Please try again.\n";
-        }
-        else {
-            chosenClass--; // Adjust for zero-based index
-            cout << "\n" << classFlavorText[chosenClass] << "\n"; // Display flavor text
-            break; // Valid choice
-        }
-    }
-
-    // Generate ability scores
-    abilityScores playerScores = generateRandomScores();
-
-    // Create character
-    Character player(characterName, races[chosenRace], charClass[chosenClass], playerScores);
-
-    cout << "\n";
-    player.displayStats();
-
-    // Ask if they want to create another character
-    cout << "\nAre you happy with this Hero? (y/n): ";
-    char continueChoice;
-    cin >> continueChoice;
-
-    if (continueChoice != 'n' && continueChoice != 'N') {
-        return player; // Return the created character
-    }
-    else {
-        // Create a new character without recursion
-        return createCharacter(); // Call the function again to create a new character
-    }
-}
 
 
 void handleRoomEvents(Room* currentRoom) {
@@ -346,16 +227,6 @@ void handleRoomEvents(Room* currentRoom) {
             delay(2 * 1000);
             cout << "'Rough night eh? Well, I would have a hangover too if I drank " << std::rand() % 50 + 1 << " bottles of rum as well.'\n\n";
             delay(2 * 1000);
-        }
-        else if (currentRoom->GetName() == "General Store") { // Handle General Store
-            cout << "The general store is bustling with customers looking for supplies.\n";
-            // Add general store-specific interactions here
-            inventory.runGeneralStore();
-        }
-        else if (currentRoom->GetName() == "Blacksmith") { // Handle Blacksmith
-            cout << "You see the blacksmith hammering away at a piece of glowing metal.\n";
-            // Add blacksmith-specific interactions here
-            inventory.runBlacksmith();
         }
         // Add more room-specific logic as needed
     }

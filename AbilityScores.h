@@ -9,9 +9,14 @@ struct abilityScores {
     int charisma;
 
 
-    // Constructor
-    abilityScores(int str, int dex, int con, int intl, int wis, int cha);
+    // Default constructor initializing all scores to 10
+    abilityScores()
+        : strength(10), dexterity(10), constitution(10),
+        intelligence(10), wisdom(10), charisma(10) {}
 
+    // Parameterized constructor
+    abilityScores(int str, int dex, int con, int intl, int wis, int cha);
+ 
     // Method to apply racial bonuses
     void applyRaceBonuses(const abilityScores& raceBonus);
 };

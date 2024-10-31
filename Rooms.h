@@ -16,13 +16,13 @@ public:
 	vector<Room*> GetExits();
 	int GetNumberOfExits();
 	void ListExits();
-	void HandlePlayerAction(Character& player);
+	void HandlePlayerAction(Character& player, Inventory& inventory);
 	void DisplayRoom();
 	string GetName();
 	bool IsFirstVisit();
 	Room* ChooseExit();
 	Room* createTown();
-	void HandleAttack(Character& player);
+	void HandleAttack(Character& player, Inventory& inventory);
 
 	//AddEntity(Entity* entity);
 	//vector<Entity*> GetEntities();

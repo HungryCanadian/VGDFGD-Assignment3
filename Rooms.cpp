@@ -57,7 +57,7 @@ bool Room::IsFirstVisit() {
     return false; // Indicate this is not the first visit
 }
 
-void Room::HandleAttack(Character& player) {
+void Room::HandleAttack(Character& player, Inventory& inventory) {
     cout << "An enemy appears!\n";
     Enemy enemies[] = {
         Enemy("Goblin", 2, 10, 3, 25),
@@ -71,7 +71,6 @@ void Room::HandleAttack(Character& player) {
     int randomIndex = rand() % 5;
 
     // Select a random enemy
-    Inventory inventory;
     auto inv = inventory.getInv();
     Enemy selectedEnemy = enemies[randomIndex];
 	cout << "You have encountered a " << selectedEnemy.getName() << "!" << "\n";
@@ -92,25 +91,24 @@ void Room::HandleAttack(Character& player) {
     }
 }
 
-void Room::HandlePlayerAction(Character& player) {
-	Inventory inventory;
+void Room::HandlePlayerAction(Character& player, Inventory& inventory) {
     // Check for specific room interactions first
     if (GetName() == "General Store") {
-        inventory.runGeneralStore();
+        inventory.runGeneralStore(player);
         return; // Exit this method after handling store logic
     }
     if (GetName() == "Blacksmith") {
-        inventory.runBlacksmith();
+        inventory.runBlacksmith(player);
         return; // Exit this method after handling store logic
     }
 
     // Check for attack chance immediately upon entering the room
     if (static_cast<float>(rand()) / RAND_MAX < mAttackChance) {
         cout << "You have been attacked!\n";
-        HandleAttack(player); // Call combat here
+        HandleAttack(player, inventory); // Call combat here
         
     }
-
+	DisplayRoom(); // Show the room description 
     // Prompt the player for their action
     while (true) {
         cout << "\nWhat would you like to do?\n";
@@ -118,7 +116,7 @@ void Room::HandlePlayerAction(Character& player) {
         cout << "[2] Move to another room\n";
         cout << "[3] Check room description\n";
         cout << "[4] Investigate your Surroundings\n";
-        cout << "[0] Exit\n";
+        cout << "[0] Quit Game!\n";
         int choice;
         cin >> choice;
 
@@ -129,7 +127,7 @@ void Room::HandlePlayerAction(Character& player) {
         case 2: {
             Room* nextRoom = ChooseExit(); // Get the next room from ChooseExit
             if (nextRoom) { // If the next room is valid
-                nextRoom->HandlePlayerAction(player); // Pass inventory to the next room
+                nextRoom->HandlePlayerAction(player, inventory); // Pass inventory to the next room
             }
             break;
         }
@@ -141,7 +139,8 @@ void Room::HandlePlayerAction(Character& player) {
             cout << "You look around carefully...\n";
             // Add any findings or interactions here
             break;
-        case 0: // Exit the loop
+        case 0: // Exit the Game
+            exit(0);
             return;
         default:
             cout << "Invalid choice. Please try again.\n";
@@ -169,7 +168,7 @@ Room* Room::ChooseExit() {
 
 Room* Room::createTown() {
     Room* tavern = new Room("Tavern", "A lively tavern filled with sounds of laughter and music.", false, 0.0f);
-    Room* townCenter = new Room("Town Center", "The bustling center of town, with shops and stalls.", false, 0.05f);
+    Room* townCenter = new Room("Town Center", "The bustling center of town, with shops and stalls.", false, 0.00f);
     Room* generalStore = new Room("General Store", "A shop filled with various supplies and goods.", false, 0.0f); // No attack chance
     Room* blacksmith = new Room("Blacksmith", "The forge is hot, and the blacksmith is hard at work.", false, 0.0f);
     Room* docks = new Room("Caspiran Docks", "A bustling waterfront where ships come and go, carrying the rich scents of salt and adventure. \nYou are surrounded by the sounds of seagulls and the chatter of merchants.", false, 0.0f);

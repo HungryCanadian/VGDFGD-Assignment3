@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include "Item.h"
+#include <algorithm> // For std::any_of
 #include "Equipment.h"
 #include "Character.h"
 
@@ -28,24 +29,24 @@ public:
     vector<Gear> getGearItems();
     vector<Gear> getEquippedGear();
     vector<Gear> getEquipment();
-    void EquipGear(Gear& gear);
-    void UnequipGear(Gear& gear);
+    void EquipGear(Gear& gear, Character& player);
+    void UnequipGear(Gear& gear, Character& player);
 	void openInventory(Character& player); //function to open the inventory  
     void ListEquippedItems(Character& player);
     Gear* GetGearByIndex(int index); //get gear by index
     int getGearCount() const; //return the number of gear 
-	void displayShopInventory(); //display the shop inventory   
-	void displayBlacksmithInventory(); //display the blacksmith inventory
+	void displayShopInventory(Character& player); //display the shop inventory   
+	void displayBlacksmithInventory(Character& player); //display the blacksmith inventory
 	void displayPlayerInventory(); //display the player inventory   
 	int getGoldQuantity() const; //get the gold quantity  
 	void increaseGold(Character& player,int amount); //increase the gold quantity   
 	void decreaseGold(Character& player,int amount); //decrease the gold quantity   
-    int sellEquipItem(int index); //sell the equipment items
-	void runBlacksmith(); //run the blacksmith
-	void runGeneralStore(); //run the general store 
-	int sellGeneralItem(int index); //sell the general items  
-	int purchaseEquipItem(int index); //purchase the equipment items 
-	int purchaseGeneralItem(int index); //purchase the general items    
+    int sellEquipItem(Character& player,int index); //sell the equipment items
+	void runBlacksmith(Character& player); //run the blacksmith
+	void runGeneralStore(Character& player); //run the general store 
+	int sellGeneralItem(Character& player,int index); //sell the general items  
+	int purchaseEquipItem(Character& player,int index); //purchase the equipment items 
+	int purchaseGeneralItem(Character& player,int index); //purchase the general items    
 
 private:
  //   vector<Item> items; // specifically for items that are not gear

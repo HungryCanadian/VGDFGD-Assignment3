@@ -1,8 +1,7 @@
 #include "Inventory.h"
-#include "Character.h"
-#include "Globals.h"
 
 
+class Character;
 
 static vector<Item> items = {
     { "healing potion", Effect(5,0,0), 3, 5, true, ItemType::Consumable },
@@ -17,7 +16,7 @@ static vector<Item> items = {
 
 static vector<Item> inv = {
     { "backpack", Effect(0,0,0), 1, 1, false, ItemType::Item },
-    { "gold", Effect(0,0,0), 150, 1, false, ItemType::Item },
+    { "gold pouch", Effect(0,0,0), 1, 1, false, ItemType::Item },
     { "mess kit", Effect(0,0,0), 1, 1, false, ItemType::Item },
     { "tinderbox", Effect(0,0,0), 1, 1, false, ItemType::Item },
     { "torch", Effect(0,0,0), 10, 1, false, ItemType::Item },
@@ -103,7 +102,7 @@ void Inventory::ListGearItems() const {
     int index = 1;
 	for (const auto& gear : gearItems) {
 		
-		cout << "[" << index++ << "] " << gear.getName() << " (x" << gear.getQuantity() << ")\n";
+		cout << "[" << index++ << "] " << gear.getName() << " (x" << gear.getQuantity() << ") [ " << gear.isEquipped() << " ]\n";
 	}
 }
 
@@ -125,15 +124,24 @@ void Inventory::ListEquippedItems(Character& player) {
     cout << "Total Damage from Equipped Items: " << totalDamage << "\n";
 }
 
-void Inventory::EquipGear(Gear& gear) {
-	gear.equip(); // gear.equip() should handle the player's damage reduction
+void Inventory::EquipGear(Gear& gear,Character& player) {
+	gear.equip(player); // gear.equip() should handle the player's damage reduction
 	equippedGear.push_back(gear);
 }
 
-//void Inventory::UnequipGear(Gear& gear) {
-//	gear.unequip();
-//	// add code to remove gear from equippedGear vector
-//}
+void Inventory::UnequipGear(Gear& gear, Character& player) {
+    gear.unequip(player); // Call the unequip method on the gear
+
+    // Find the gear in the equippedGear list and remove it
+    auto it = std::find(equippedGear.begin(), equippedGear.end(), gear);
+    if (it != equippedGear.end()) {
+        equippedGear.erase(it); // Remove the gear from equippedGear
+        cout << gear.getName();
+    }
+    else {
+        cout << "Error: Gear not found in equipped items.\n";
+    }
+}
 
 Gear* Inventory::GetGearByIndex(int index) {
 	if (index >= 0 && index < gearItems.size()) {
@@ -148,33 +156,101 @@ int Inventory::getGearCount() const {
 
 void Inventory::openInventory(Character& player) {
     while (true) {
-        cout << "\n\n";
-        ListGearItems(); // List all currently equipable items
-        cout << "\n---------------------------------\n";
-        ListEquippedItems(player); // List all currently equipped items
-        cout << "[Enter the number of the gear to equip, or '0' to exit]\n";
+        cout << "\nChoose an inventory to open:\n";
+        cout << "[1] Gear Inventory\n";
+        cout << "[2] General Inventory\n";
+        cout << "[3] Exit\n";
 
         int choice;
         cin >> choice;
 
-        // Exit inventory
-        if (choice == 0) {
-            break;
+        if (choice == 3) {
+            break; // Exit the inventory menu
         }
 
-        // Validate choice and equip gear
-        if (choice > 0 && choice <= gearItems.size()) {
-            Gear& selectedGear = gearItems[choice - 1];
-            player.EquipGear(selectedGear); // Use the player's equip method
+        switch (choice) {
+        case 1: { // Open Gear Inventory
+            ListGearItems(); // List gear items
+            cout << "\n---------------------------------\n";
+            ListEquippedItems(player);
+            cout << "[Enter the number of the gear to equip or unequip, or '0' to exit]\n";
+
+            int choice;
+            cin >> choice;
+
+            // Exit inventory
+            if (choice == 0) {
+                break;
+            }
+       
+
+            // Validate choice and either equip or unequip gear
+            if (choice > 0 && choice <= gearItems.size()) {
+                Gear& selectedGear = gearItems[choice - 1];
+                        //        // Ask the player if they want to equip or unequip the selected gear
+                cout << "Do you want to equip or unequip this item? (1 for equip, 2 for unequip): ";
+                int action;
+                cin >> action;
+
+                if (action == 1) {
+                    player.EquipGear(selectedGear, player); // Equip the gear
+                    gearItems.erase(gearItems.begin() + (choice - 1)); // Remove from gear items
+                    cout << selectedGear.getName() << " has been equipped.\n";
+                }
+                else if (action == 2) {
+                    player.UnequipGear(selectedGear, player); // Call the UnequipGear function
+                    cout << selectedGear.getName() << " has been unequipped.\n";
+                }
+                else {
+                    cout << "Invalid action! Please try again.\n";
+                }
+            }
+            else {
+                cout << "Invalid choice! Please try again.\n";
+            }
         }
-        else {
+              break;
+
+        case 2: { // Open General Inventory
+            displayPlayerInventory(); // Display general inventory
+            cout << "[Enter the number of the Item you wish to interact with, or '0' to exit]\n";
+
+            int choice;
+            cin >> choice;
+
+            // Exit inventory
+            if (choice == 0) {
+                break;
+            }
+
+            // Validate choice within bounds and interact with gear
+            if (choice > 0 && choice <= static_cast<int>(inv.size())) { // Cast to ensure types match
+                Item& selectedItem = inv[choice - 1];
+
+                // Check if the selected item is consumable
+                if (selectedItem.getType() == ItemType::Consumable) {
+                    cout << "You have consumed: " << selectedItem.getName() << "\n";
+                    selectedItem.use(); // Use the item if it's consumable
+                }
+                else {
+                    cout << "You selected a non-consumable item: " << selectedItem.getName() << "\n";
+                    cout << "You feel like Ryder is judging you...";
+                }
+            }
+            else {
+                cout << "Invalid choice! Please try again.\n";
+            }
+        }
+
+        default:
             cout << "Invalid choice! Please try again.\n";
+            break;
         }
     }
 }
 
 
-void Inventory::displayShopInventory() {
+void Inventory::displayShopInventory(Character& player) {
     cout << "\nMerchant items: \n\n";
     cout << "You have: " << player.getGold() << " gold pieces!\n\n";
 
@@ -186,7 +262,7 @@ void Inventory::displayShopInventory() {
     }
 }
 
-void Inventory::displayBlacksmithInventory() {
+void Inventory::displayBlacksmithInventory(Character& player) {
     cout << "\nBlacksmith items: \n\n";
     cout << "You have: " << player.getGold() << " gold pieces!\n\n";
 
@@ -246,7 +322,7 @@ void Inventory::decreaseGold(Character& player,int amount) {
     cout << "Gold decreased by " << amount << ". New total: " << player.getGold() << " gold pieces.\n";
 }
 
-int Inventory::sellEquipItem(int index) { // Sell items to the blacksmith by index
+int Inventory::sellEquipItem(Character& player,int index) { // Sell items to the blacksmith by index
     while (true) {
         if (index < 1 || index > gearItems.size()) {
             cout << "Invalid selection! Please enter a valid index.\n";
@@ -271,7 +347,7 @@ int Inventory::sellEquipItem(int index) { // Sell items to the blacksmith by ind
             int totalSaleValue = item.getValue() * howMany;
 
             // Use the inventory functions to handle gold and quantity
-            increaseGold(player,totalSaleValue); // Add gold from the sale
+            player.addGold(totalSaleValue); // Add gold from the sale
             item.decreaseQuantity(howMany); // Decrease the item quantity
 
             // If quantity drops to 0, remove the item from inventory
@@ -292,7 +368,7 @@ int Inventory::sellEquipItem(int index) { // Sell items to the blacksmith by ind
                 cout << "Enter the index of the item you would like to sell:\n";
                 int newIndex;
                 cin >> newIndex; // Get new index for the next sell
-                return sellEquipItem(newIndex); // Recursive call to continue selling
+                return sellEquipItem(player,newIndex); // Recursive call to continue selling
             }
             else {
                 return 1; // Exit the sell loop
@@ -306,31 +382,27 @@ int Inventory::sellEquipItem(int index) { // Sell items to the blacksmith by ind
     }
 }
 
-void Inventory::runBlacksmith() {
+void Inventory::runBlacksmith(Character& player) {
     while (true) {
         cout << player.getGold() << " Gold remaining\n\n";
-        cout << "Welcome to the Hooves and Steel! What can I do for you today?\n[1]Buy \n[2]Sell \n[3]Inventory \n[4]Quit \n\n";
+        
+        cout << "Welcome to the Hooves and Steel! What can I do for you today?\n[1]Buy \n[2]Sell \n[3]Leave \n\n";
         cout << "What would you like to do?: ";
         int intent;
         cin >> intent;
 
-        if (intent == 4) {
-            break; // Exit the loop if user wants to quit
-        }
         if (intent == 3) {
-            system("cls");
-            displayPlayerInventory();
-            continue; // Go back to the start of the loop
+            break; // Exit the loop if user wants to quit
         }
 
         if (intent == 1) {
             system("cls");
             cout << "What would you like to purchase?\n";
-            displayBlacksmithInventory();
+            displayBlacksmithInventory(player);
             int input;
             cout << "which item would you like to buy: ";
             cin >> input;
-            purchaseEquipItem(input);
+            purchaseEquipItem(player,input);
             system("pause");
             system("cls");
         }
@@ -341,41 +413,36 @@ void Inventory::runBlacksmith() {
             int input;
             cout << "Which item would you like to sell: ";
             cin >> input;
-            sellEquipItem(input);
+            sellEquipItem(player,input);
             system("pause");
             system("cls");
         }
         else {
-            cout << "Invalid option! Please enter 'buy', 'sell', 'inventory', or 'quit'.\n";
+            cout << "Invalid option! Please enter 1, 2, or 3.\n";
         }
     }
 }
 
-void Inventory::runGeneralStore() {
+void Inventory::runGeneralStore(Character& player) {
     while (true) {
         cout << player.getGold() << " Gold remaining\n\n";
-        cout << "Welcome to the Caspiran general store! What can I do for you today?\n[1]Buy \n[2]Sell \n[3]Inventory \n[4]Quit \n\n";
+        cout << "Welcome to the Caspiran general store! What can I do for you today?\n[1]Buy \n[2]Sell \n[3]Leave \n\n";
         cout << "What would you like to do: ";
         int intent;
         cin >> intent;
 
-        if (intent == 4) {
-            break; // Exit the loop if user wants to quit
-        }
         if (intent == 3) {
-            system("cls");
-            displayPlayerInventory();
-            continue; // Go back to the start of the loop
+            break; // Exit the loop if user wants to quit
         }
 
         if (intent == 1) {
             system("cls");
             cout << "What would you like to purchase?\n";
-            displayShopInventory();
+            displayShopInventory(player);
             int input;
             cout << "What would you like to do: ";
             cin >> input;
-            purchaseGeneralItem(input);
+            purchaseGeneralItem(player,input);
             system("pause");
             system("cls");
         }
@@ -386,7 +453,7 @@ void Inventory::runGeneralStore() {
             int input;
             cout << "what would you like to do: ";
             cin >> input;
-            sellGeneralItem(input);
+            sellGeneralItem(player,input);
             system("pause");
             system("cls");
         }
@@ -396,7 +463,7 @@ void Inventory::runGeneralStore() {
     }
 }
 
-int Inventory::sellGeneralItem(int index) { // Selling items to the general store
+int Inventory::sellGeneralItem(Character& player,int index) { // Selling items to the general store
     while (true) {
         if (index < 1 || index > inv.size()) {
             cout << "Invalid number! Please try again.\n";
@@ -460,7 +527,7 @@ int Inventory::sellGeneralItem(int index) { // Selling items to the general stor
     }
 }
 
-int Inventory::purchaseEquipItem(int index) { // Purchase items from the blacksmith by index
+int Inventory::purchaseEquipItem(Character& player,int index) { // Purchase items from the blacksmith by index
     while (true) {
         // Check if the index is valid
         if (index < 1 || index > equipment.size()) {
@@ -492,7 +559,7 @@ int Inventory::purchaseEquipItem(int index) { // Purchase items from the blacksm
         int totalCost = item.getValue() * howMany;
 
         // Check if the player has enough gold
-        if (getGoldQuantity() < totalCost) {
+        if (player.getGold() < totalCost) {
             cout << "Not enough gold!\n";
             return 0;
         }
@@ -504,7 +571,7 @@ int Inventory::purchaseEquipItem(int index) { // Purchase items from the blacksm
         }
 
         // Process the purchase
-        decreaseGold(player, totalCost);
+        player.subtractGold(totalCost);
         item.decreaseQuantity(howMany);
 
         // Check if the item already exists in gearItems
@@ -538,7 +605,7 @@ int Inventory::purchaseEquipItem(int index) { // Purchase items from the blacksm
 
         // Display the inventory and prompt for a new purchase
         system("cls"); // Clear the screen
-        displayBlacksmithInventory();
+        displayBlacksmithInventory(player);
         cout << "What would you like to purchase? (Enter the item number)\n";
 
         // Get a valid item index
@@ -558,7 +625,7 @@ int Inventory::purchaseEquipItem(int index) { // Purchase items from the blacksm
     }
 }
 
-int Inventory::purchaseGeneralItem(int index) { // Purchase items from the general store
+int Inventory::purchaseGeneralItem(Character& player,int index) { // Purchase items from the general store
     while (true) {
         if (index < 1 || index > items.size()) {
             cout << "Invalid number! Please try again.\n";
@@ -614,11 +681,11 @@ int Inventory::purchaseGeneralItem(int index) { // Purchase items from the gener
         system("cls");
 
         if (again == 'y') {
-            displayShopInventory(); // Display available items again
+            displayShopInventory(player); // Display available items again
             cout << "What else would you like to purchase: ";
             int newIndex;
             cin >> newIndex;
-            return purchaseGeneralItem(newIndex); // Loop back to purchase
+            return purchaseGeneralItem(player,newIndex); // Loop back to purchase
         } else {
             return 1;  // Exit the purchase loop
         }
