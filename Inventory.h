@@ -38,8 +38,8 @@ public:
 	void displayBlacksmithInventory(); //display the blacksmith inventory
 	void displayPlayerInventory(); //display the player inventory   
 	int getGoldQuantity() const; //get the gold quantity  
-	void increaseGold(int amount); //increase the gold quantity   
-	void decreaseGold(int amount); //decrease the gold quantity   
+	void increaseGold(Character& player,int amount); //increase the gold quantity   
+	void decreaseGold(Character& player,int amount); //decrease the gold quantity   
     int sellEquipItem(int index); //sell the equipment items
 	void runBlacksmith(); //run the blacksmith
 	void runGeneralStore(); //run the general store 

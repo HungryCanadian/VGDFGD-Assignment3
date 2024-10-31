@@ -1,7 +1,7 @@
 #include "Inventory.h"
+#include "Character.h"
+#include "Globals.h"
 
-
-Character player;
 
 
 static vector<Item> items = {
@@ -214,7 +214,7 @@ int Inventory::getGoldQuantity() const {
     return 0; // Return 0 if gold is not found
 }
 
-void Inventory::increaseGold(int amount) {
+void Inventory::increaseGold(Character& player,int amount) {
     
     if (amount <= 0) {
         cout << "Amount to increase must be positive!\n";
@@ -227,7 +227,7 @@ void Inventory::increaseGold(int amount) {
     cout << "Gold increased by " << amount << ". New total: " << player.getGold() << " gold pieces.\n";
 }
 
-void Inventory::decreaseGold(int amount) {
+void Inventory::decreaseGold(Character& player,int amount) {
     
     if (amount <= 0) {
         cout << "Amount to decrease must be positive!\n";
@@ -271,7 +271,7 @@ int Inventory::sellEquipItem(int index) { // Sell items to the blacksmith by ind
             int totalSaleValue = item.getValue() * howMany;
 
             // Use the inventory functions to handle gold and quantity
-            increaseGold(totalSaleValue); // Add gold from the sale
+            increaseGold(player,totalSaleValue); // Add gold from the sale
             item.decreaseQuantity(howMany); // Decrease the item quantity
 
             // If quantity drops to 0, remove the item from inventory
@@ -421,7 +421,7 @@ int Inventory::sellGeneralItem(int index) { // Selling items to the general stor
         }
 
         // Adjust gold and inventory
-        increaseGold(item.getValue() * howMany);
+        increaseGold(player, item.getValue() * howMany);
         decreaseQuantity(item.getName(), howMany);
 
         // Check if the item is also available in the shop to increase stock
@@ -504,7 +504,7 @@ int Inventory::purchaseEquipItem(int index) { // Purchase items from the blacksm
         }
 
         // Process the purchase
-        decreaseGold(totalCost);
+        decreaseGold(player, totalCost);
         item.decreaseQuantity(howMany);
 
         // Check if the item already exists in gearItems
@@ -590,7 +590,7 @@ int Inventory::purchaseGeneralItem(int index) { // Purchase items from the gener
         }
 
         // Use the Inventory functions for decreasing gold and item quantity
-        decreaseGold(totalCost);
+        decreaseGold(player, totalCost);
         decreaseQuantity(item.getName(), howMany);
 
         // Check if the item already exists in the inventory

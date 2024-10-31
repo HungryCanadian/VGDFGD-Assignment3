@@ -1,4 +1,5 @@
 #pragma once
-#include "Character.h"
 
-extern Character player; // Declaration of the global player reference
+class Character; // Forward declaration of the Character class
+
+extern Character player; // Declare player as a global variable

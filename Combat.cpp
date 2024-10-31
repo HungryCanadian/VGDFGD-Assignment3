@@ -75,12 +75,10 @@ void Combat::enemyTurn() {
     if (damageToPlayer < 0) {
         damageToPlayer = 0; // No damage if reduction exceeds attack
     }
-
+	// Output the attack message
+	cout << enemy.getName() << " attacks you for " << enemy.getAttack() << " damage!\n";
     // Apply damage to the player
-    player.takeDamage(damageToPlayer);
-
-    // Output the attack message
-    cout << enemy.getName() << " attacks you for " << damageToPlayer << " damage!\n";
+    player.takeDamage(damageToPlayer);    
 
     if (!player.isAlive()) {
         cout << player.getName() << " has been defeated!\n";

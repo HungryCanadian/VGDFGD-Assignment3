@@ -150,7 +150,7 @@ void Character::Levelup() {
     mHealth = mMaxHealth;
     mDamage += 1;
 	cout << "\n\n";
-    cout << "  |~~~~~~~~~~~~~~~~~~~~|" << mLevel << "!\n";
+    cout << "  |~~~~~~~~~~~~~~~~~~~~| " <<"\n";
     cout << "  |     LEVEL UP!      | " << "\n";
     cout << "  |~~~~~~~~~~~~~~~~~~~~| " << "\n";
 	cout << "\n\n You are now Level " << mLevel << "!\n\n";
@@ -216,15 +216,18 @@ int Character::calculateBonus(int score) const {
 }
 
 void Character::displayStats() const {
-    cout << "Character: " << mName << "\n";
-    cout << "Race: " << mRace.name << "\n";
-    cout << "Class: " << mType.name << "\n";
-    cout << "Hitpoints: " << mHealth << "\n";
-    cout << "Ability Scores:\n";
-    cout << "Strength: " << mBaseScores.strength << " (+" << mBonuses.strength << ")\n";
-    cout << "Dexterity: " << mBaseScores.dexterity << " (+" << mBonuses.dexterity << ")\n";
-    cout << "Constitution: " << mBaseScores.constitution << " (+" << mBonuses.constitution << ")\n";
-    cout << "Intelligence: " << mBaseScores.intelligence << " (+" << mBonuses.intelligence << ")\n";
-    cout << "Wisdom: " << mBaseScores.wisdom << " (+" << mBonuses.wisdom << ")\n";
-    cout << "Charisma: " << mBaseScores.charisma << " (+" << mBonuses.charisma << ")\n";
+    cout << "|~~~~~~~~~~~~~~~~~|\n";
+    cout << "| Character:      |--" << mName << "\n";
+    cout << "| Race:           |--" << mRace.name << "\n";
+    cout << "| Class:          |--" << mType.name << "\n";
+    cout << "| Hitpoints:      |--" << mHealth << "/" << mMaxHealth << "\n";
+    cout << "|~~~~~~~~~~~~~~~~~|\n";
+    cout << "| Ability Scores: |\n";
+    cout << "| Strength:       |--" << mBaseScores.strength << " (+" << mBonuses.strength << ")\n";
+    cout << "| Dexterity:      |--" << mBaseScores.dexterity << " (+" << mBonuses.dexterity << ")\n";
+    cout << "| Constitution:   |--" << mBaseScores.constitution << " (+" << mBonuses.constitution << ")\n";
+    cout << "| Intelligence:   |--" << mBaseScores.intelligence << " (+" << mBonuses.intelligence << ")\n";
+    cout << "| Wisdom:         |--" << mBaseScores.wisdom << " (+" << mBonuses.wisdom << ")\n";
+    cout << "| Charisma:       |--" << mBaseScores.charisma << " (+" << mBonuses.charisma << ")\n";
+    cout << "|~~~~~~~~~~~~~~~~~|\n";
 }
