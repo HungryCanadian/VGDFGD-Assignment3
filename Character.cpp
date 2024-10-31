@@ -127,8 +127,16 @@ void Character::AddItemToInventory(Gear& gear) {
     inventory->AddItem(gear);
 }
 
-void Character::RemoveItemFromInventory(Gear& gear) {
-    inventory->RemoveItem(gear);
+void Character::RemoveItemFromInventory(int index) {
+    // Check if the index is within the valid range
+    if (index >= 0 && index < equippedGear.size()) {
+        // Erase the item at the specified index
+        equippedGear.erase(equippedGear.begin() + index);
+        cout << "Item at index " << index << " has been removed from equipped gear.\n";
+    }
+    else {
+        cout << "Invalid index! Unable to remove item from equipped gear.\n";
+    }
 }
 
 void Character::ListInventory() const {

@@ -69,7 +69,7 @@ public:
     void EquipGear(Gear& gear, Character& player); // To equip armor
     void UnequipGear(Gear& gear, Character& player); // To unequip armor
     void AddItemToInventory(Gear& gear); // Method to add an item
-    void RemoveItemFromInventory(Gear& gear); // Method to remove an item
+    void RemoveItemFromInventory(int index); // Method to remove an item
     void ListInventory() const; // Method to list items in inventory
 	int getTotalDamageReduction() const; // Method to get total damage reduction
     const vector<Gear>& getGearItems() const;

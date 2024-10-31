@@ -102,7 +102,7 @@ void Inventory::ListGearItems() const {
     int index = 1;
 	for (const auto& gear : gearItems) {
 		
-		cout << "[" << index++ << "] " << gear.getName() << " (x" << gear.getQuantity() << ") [ " << gear.isEquipped() << " ]\n";
+		cout << "[" << index++ << "] " << gear.getName() << "\n";
 	}
 }
 
@@ -157,14 +157,15 @@ int Inventory::getGearCount() const {
 void Inventory::openInventory(Character& player) {
     while (true) {
         cout << "\nChoose an inventory to open:\n";
-        cout << "[1] Gear Inventory\n";
-        cout << "[2] General Inventory\n";
-        cout << "[3] Exit\n";
+        cout << "[1] Unequipped Gear\n";
+        cout << "[2] Equipped Gear\n";
+        cout << "[3] General Inventory\n";
+        cout << "[4] Exit\n";
 
         int choice;
         cin >> choice;
 
-        if (choice == 3) {
+        if (choice == 4) {
             break; // Exit the inventory menu
         }
 
@@ -172,8 +173,7 @@ void Inventory::openInventory(Character& player) {
         case 1: { // Open Gear Inventory
             ListGearItems(); // List gear items
             cout << "\n---------------------------------\n";
-            ListEquippedItems(player);
-            cout << "[Enter the number of the gear to equip or unequip, or '0' to exit]\n";
+            cout << "[Enter the number of the gear to equip, or '0' to exit]\n";
 
             int choice;
             cin >> choice;
@@ -182,28 +182,16 @@ void Inventory::openInventory(Character& player) {
             if (choice == 0) {
                 break;
             }
-       
 
-            // Validate choice and either equip or unequip gear
+            // Validate choice and equip gear
             if (choice > 0 && choice <= gearItems.size()) {
                 Gear& selectedGear = gearItems[choice - 1];
-                        //        // Ask the player if they want to equip or unequip the selected gear
-                cout << "Do you want to equip or unequip this item? (1 for equip, 2 for unequip): ";
-                int action;
-                cin >> action;
 
-                if (action == 1) {
-                    player.EquipGear(selectedGear, player); // Equip the gear
-                    gearItems.erase(gearItems.begin() + (choice - 1)); // Remove from gear items
-                    cout << selectedGear.getName() << " has been equipped.\n";
-                }
-                else if (action == 2) {
-                    player.UnequipGear(selectedGear, player); // Call the UnequipGear function
-                    cout << selectedGear.getName() << " has been unequipped.\n";
-                }
-                else {
-                    cout << "Invalid action! Please try again.\n";
-                }
+                // Equip the gear
+                player.EquipGear(selectedGear, player);
+
+                // Remove the gear from the gearItems inventory after equipping
+                gearItems.erase(gearItems.begin() + (choice - 1));
             }
             else {
                 cout << "Invalid choice! Please try again.\n";
@@ -211,7 +199,38 @@ void Inventory::openInventory(Character& player) {
         }
               break;
 
-        case 2: { // Open General Inventory
+        case 2: { // Open Equipped Gear Inventory
+            ListEquippedItems(player); // List equipped gear items
+            cout << "\n---------------------------------\n";
+            cout << "[Enter the number of the gear to unequip, or '0' to exit]\n";
+
+            int choice;
+            cin >> choice;
+
+            // Exit inventory
+            if (choice == 0) {
+                break;
+            }
+
+            // Validate choice and unequip gear
+            if (choice > 0 && choice <= player.getGearItems().size()) { // Assume equippedGearItems is a list of currently equipped items
+                Gear selectedGear = player.getGearItems()[choice - 1];
+
+				// add it to old gear list then remove it from equipped gear
+                gearItems.push_back(selectedGear);
+                player.RemoveItemFromInventory(choice - 1);
+
+                cout << selectedGear.getName() << " has been unequipped.\n";
+
+
+            }
+            else {
+                cout << "Invalid choice! Please try again.\n";
+            }
+        }
+              break;
+
+        case 3: { // Open General Inventory
             displayPlayerInventory(); // Display general inventory
             cout << "[Enter the number of the Item you wish to interact with, or '0' to exit]\n";
 
