@@ -162,6 +162,20 @@ void Character::EquipGear(Gear& gear, Character& player) {
     cout << gear.getName() << " has been added to your equipped gear.\n";
 }
 
+void Character::displayVictoryScreen() {
+    cout << "\n\n";
+    cout << "|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|\n";
+    cout << "|              VICTORY!                |\n";
+    cout << "|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|\n";
+    cout << "\n";
+    cout << "Congratulations, " << getName() << "!\n";
+    cout << "You've defeated Barbossa and claimed victory!\n";
+    cout << "\n";
+    system("pause");
+    exit(0);
+    
+
+}
 
 void Character::UnequipGear(Gear& gear, Character& player) {
     // Find the gear in the equippedGear vector

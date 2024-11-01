@@ -25,7 +25,7 @@ public:
     void decreaseQuantity(const string& itemName, int howMany);
     void increaseQuantity(const string& itemName, int howMany);
     vector<Item>& getItems();
-    vector<Item> getInv();
+    vector<Item>& getInv();
     vector<Gear> getGearItems();
     vector<Gear> getEquippedGear();
     vector<Gear> getEquipment();

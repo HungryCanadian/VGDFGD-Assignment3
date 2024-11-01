@@ -4,7 +4,7 @@
 class Character;
 
 static vector<Item> items = {
-    { "healing potion", Effect(5,0,0), 3, 5, true, ItemType::Consumable },
+    { "healing potion", Effect(5,0,0), 5, 5, true, ItemType::Consumable },
     { "rations", Effect(2,0,0), 30, 1, true, ItemType::Consumable },
     { "mess kit", Effect(0,0,0), 1, 1, false, ItemType::Item },
     { "tinderbox", Effect(0,0,0), 1, 1, false, ItemType::Item },
@@ -20,7 +20,7 @@ static vector<Item> inv = {
     { "mess kit", Effect(0,0,0), 1, 1, false, ItemType::Item },
     { "tinderbox", Effect(0,0,0), 1, 1, false, ItemType::Item },
     { "torch", Effect(0,0,0), 10, 1, false, ItemType::Item },
-    { "rations", Effect(2,0,0), 30, 1, true, ItemType::Consumable },
+    { "rations", Effect(2,0,0), 5, 1, true, ItemType::Consumable },
     { "waterskin", Effect(0,0,0), 1, 1, false, ItemType::Item },
     { "rope", Effect(0,0,0), 1, 2, false, ItemType::Item }
 
@@ -30,7 +30,24 @@ static vector<Gear> equipment = {
     { "sword", Effect(0,3,0), 1, 15, false, ItemType::Weapon, false },
     { "shield", Effect(0,0,0,1), 1, 25, false, ItemType::Gear, false },
     { "crossbow", Effect(0,2,0), 1, 20, false, ItemType::Weapon, false },
-    { "armor", Effect(0,0,0,2), 1, 100, false, ItemType::Gear, false }
+	{ "armor", Effect(0,0,0,2), 1, 100, false, ItemType::Gear, false },
+	/*{ "helmet", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
+	{ "boots", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
+	{ "gloves", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
+	{ "ring", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
+	{ "amulet", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
+	{ "belt", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
+	{ "cloak", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
+	{ "bracers", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
+	{ "pants", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
+	{ "shirt", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
+	{ "robe", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
+	{ "staff", Effect(0,2,0), 1, 10, false, ItemType::Weapon, false },
+	{ "wand", Effect(0,1,0), 1, 10, false, ItemType::Weapon, false },
+	{ "orb", Effect(0,1,0), 1, 10, false, ItemType::Weapon, false },
+	{ "scroll", Effect(0,0,0), 1, 10, false, ItemType::Gear, false },
+	{ "book", Effect(0,0,0), 1, 10, false, ItemType::Gear, false },*/
+
 
 };
 
@@ -81,7 +98,7 @@ vector<Item>& Inventory::getItems() {
     return items;
 }
 
-vector<Item> Inventory::getInv() {
+vector<Item>& Inventory::getInv() {
     return inv;
 }
 

@@ -493,7 +493,6 @@ void Room::HandlePlayerAction(Room* room, Character& player, Inventory& inventor
     // Store the current room for reference
     // Check for specific room interactions first
 
-
     if (GetName() == "General Store") {
         inventory.runGeneralStore(player);
         return; // Exit this method after handling store logic
@@ -527,6 +526,7 @@ void Room::HandlePlayerAction(Room* room, Character& player, Inventory& inventor
         case 1: // Open inventory
             inventory.openInventory(player); // Call the inventory function
             break;
+
         case 2: {
             Room* nextRoom = ChooseExit(); // Get the next room from ChooseExit
             if (nextRoom) { // If the next room is valid
@@ -534,9 +534,11 @@ void Room::HandlePlayerAction(Room* room, Character& player, Inventory& inventor
             }
             break;
         }
+
         case 3:
             DisplayRoom(player, inventory); // Show room description
             break;
+
         case 4:
             // Implement the logic for investigating surroundings
             cout << "You look around carefully...\n\n";
@@ -558,7 +560,7 @@ void Room::HandlePlayerAction(Room* room, Character& player, Inventory& inventor
 
                     // Check the NPC's name for special actions
                     if (npcName == "Bartender") {
-                        cout << "The is full of life.\n";
+                        cout << "The Bartender is full of life.\n";
                         string rest;
                         cout << "Would you like to rest for the night? (y/n): ";
                         cin >> rest;
@@ -569,35 +571,44 @@ void Room::HandlePlayerAction(Room* room, Character& player, Inventory& inventor
                             cout << "You are now at " << player.getHealth() << " health.\n";
                             cout << "You have been fully healed!\n";
                         }
-                        else if (npcName == "Merchant") {
-                            cout << "The merchant offers you some wares for sale.\n";
-                            // Additional logic for interacting with the merchant
-                        }
-                        else if (npcName == "Wise Old Man") {
-                            cout << "The wise old man shares a piece of advice.\n";
-                            // Additional logic for interacting with the wise old man
-                        }
                         else {
-                            cout << "You have a casual conversation with " << npcName << ".\n";
+                            cout << "Well enjoy your day then!\n";
                         }
                     }
-
+                    else if (npcName == "Barbossa") {
+                        cout << "\n Barbosa says: I am going to have to teach you what happens to people who poke around where they are unwanted\n";
+                        Enemy enemy("Barbossa", 5, 150, 100, 1000);
+                        Combat combat(player, enemy, inventory.getInv());
+                        combat.start();
+						if (!player.isAlive()) {
+							cout << "Game over, man! Game over!\n\n";
+							exit(0); // Exit the game if the player is dead
+						}
+						else {
+                            player.displayVictoryScreen();
+						}
+                    }
+                    else if (npcName == "Wise Old Man") {
+                        cout << "The wise old man shares a piece of advice.\n";
+                        // Additional logic for interacting with the wise old man
+                    }
                     else {
-                        cout << "Invalid choice. Please try again.\n";
+                        cout << "You have a casual conversation with " << npcName << ".\n";
                     }
                 }
+                else {
+                    cout << "Invalid choice. Please try again.\n";
+                }
+            }
+            break;
 
-
-                /*InteractWithNPCs();*/
-                // Add any findings or interactions here
-                break;
         case 0: // Exit the Game
             exit(0);
             return;
+
         default:
             cout << "Invalid choice. Please try again.\n";
             break;
-            }
         }
     }
 }
@@ -671,6 +682,9 @@ Room* Room::createTown() {
 	NPC* lumberjack = new NPC("Lumberjack", "Hard work, but it pays the bills.");
 	NPC* foreman = new NPC("Foreman", "Keep up the pace, we have a quota to meet!");
 	NPC* woodcutter = new NPC("Woodcutter", "The forest provides, but we must respect it.");
+
+    //HeartwoodGrove boss
+	NPC* barbossa = new NPC("Barbossa", "You couldn't just leave well enough alone huh? you HAD to figure out the problem with the shipments?.");
 	
 
 	// Add NPCs to rooms
@@ -694,6 +708,8 @@ Room* Room::createTown() {
 	docks->AddNPC(sailor);
 	docks->AddNPC(captain);
 	docks->AddNPC(shipwright);
+
+	heartwood->AddNPC(barbossa);
 
     // Set connections
     tavern->AddExit(townCenter);

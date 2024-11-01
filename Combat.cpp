@@ -82,6 +82,7 @@ void Combat::enemyTurn() {
 
     if (!player.isAlive()) {
         cout << player.getName() << " has been defeated!\n";
+		exit(0);
     }
 }
 

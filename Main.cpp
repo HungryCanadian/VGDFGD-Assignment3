@@ -71,10 +71,13 @@ Room room;
 
 int main()
 {
-    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    srand(static_cast<unsigned int>(time(nullptr)));
+
+    char playAgain;
     
-    Room* currentRoom = room.createTown();
-    
+    do {
+        Room* currentRoom = room.createTown();
+        
     system("cls");
     cout << " __      __            .__       .___         _____  _________                       .__               \n";
     cout << "/  \\    /  \\___________|  |    __| _/   _____/ ____\\ \\_   ___ \\_____    ____________ |__|___________   \n";
@@ -133,70 +136,28 @@ int main()
     cout << "\nLet's get a bit more information on our Hero!\n\n";
 
 
-	Character player = player.createCharacter();
+    Character player = player.createCharacter();
 
 
     cout << "Now " << player.getName() << ", let's start your adventure!\n\n";
     while (true) {
-        currentRoom->HandlePlayerAction(currentRoom,player, inventory); // Handle player actions
+        currentRoom->HandlePlayerAction(currentRoom, player, inventory);
+        // Add a condition to break the loop when the game is over, e.g., a victory or defeat
+
+
     }
+    victory:
+    cout << "Would you like to play again? (y/n): ";
+    cin >> playAgain;
+    system("cls"); // Clear screen for the next game session
+    } while (playAgain == 'y' || playAgain == 'Y');
+
+    return 0;
+}
     
 
 
-        cout << "'Have a good day!'";
-        /*inventory.runGeneralStore();
-		inventory.runBlacksmith();
-        inventory.openInventory(player);*/
-        
-        char tutorial;
-        cout << "Hang on! before you head out there you may need a bit of information.\nDo you know how to fight in these lands? (y/n): ";
-        cin >> tutorial;
-        if (tutorial == 'n' || tutorial == 'N') {
-            cout << "Hi there, my name is Ryder and i will be the friendly voice in your head that helps you out!\n";
-            delay(2 * 1000);
-            cout << "Let me teach you some things about how combat works in the world of caspira.\n";
-            delay(2 * 1000);
 
-            cout << "\nChoose an action:\n";
-            cout << "[1] Attack\n";
-            cout << "[2] Defend\n";
-            cout << "[3] Use Item\n";
-            cout << "[4] Run\n\n";
-            delay(2 * 1000);
-
-            cout << "This is what you will see when you enter combat, \nYou don't need to choose anything right now i am just giving you an example!\n";
-            delay(3 * 1000);
-            cout << "Now, [1] Attack, should be self explanatory, \nyou will attack with whatever weapon you have equipped currently.\n";
-            delay(3 * 1000);
-            cout << "Next, [2] Defend, you will raise your weapon or shield into a defensive position, \nyou will reduce any incoming damage to '1 damage' for that round.\n";
-            delay(3 * 1000);
-            cout << "Next, [3] Use Item, this will open your inventory and let you choose from a list of useable items, such as potions, \nyou then give up your turn to use that item.\n";
-            delay(3 * 1000);
-            cout << "Finally, [4] Run, you will try to run away from the fight. \nit is only a percentage chance you will run away and if you fail the enemy will get a free attack on you.\n";
-            delay(3 * 1000);
-            cout << "Now that we have gone over the basics of the system, let's get you some hands on experience!\n\n";
-            delay(2 * 1000);
-            cout << "A Random Goblin appears in front of you! \nIt looks angry and hungry.\n";
-            delay(4 * 1000);
-        }
-
-        else {
-            cout << "\nWatch out!\n";
-            cout << "Ambush!\nYou were ambushed the moment you exited the town!\n";
-        }
-        Enemy enemy("Goblin", 2, 10);
-        auto inv = inventory.getInv();
-        Combat combat(player, enemy, inv);
-        combat.start();
-        if (player.isAlive() == false) {
-            cout << "Game over man! Game over!\n\n";
-            exit(0);
-        }
-        else {
-            cout << "Congratulation on your first victory!";
-        }
-        return 0;
-    }
 
 
 

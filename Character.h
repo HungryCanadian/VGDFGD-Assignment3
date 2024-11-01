@@ -60,6 +60,7 @@ public:
     void removeDamageReduction(int amount);
 	int getGold();
     void setHealth(int health);
+    void displayVictoryScreen();
 	int addGold(int amount);
 	int subtractGold(int amount);
     int heal(int amount);
