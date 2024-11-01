@@ -46,13 +46,10 @@ int calculateBonus(int score) {
 string characterName;
 string input = "";
 
-void handleRoomEvents(Room* currentRoom);
+//void handleRoomEvents(Room* currentRoom, Character& player);
 
 
 Inventory inventory;
-
-
-
 
 bool skipDelays = false; // Global variable to track delay preference
 
@@ -141,8 +138,7 @@ int main()
 
     cout << "Now " << player.getName() << ", let's start your adventure!\n\n";
     while (true) {
-        handleRoomEvents(currentRoom);
-        currentRoom->HandlePlayerAction(player, inventory); // Handle player actions
+        currentRoom->HandlePlayerAction(currentRoom,player, inventory); // Handle player actions
     }
     
 
@@ -206,30 +202,81 @@ int main()
 
 
 
-void handleRoomEvents(Room* currentRoom) {
-    if (currentRoom->IsFirstVisit()) { // Check if it's the first visit
-        if (currentRoom->GetName() == "Tavern") {
-            cout << "You wake up in your cozy bed at the tavern, the smell of breakfast wafting through the air.\n";
-            delay(3 * 1000);
-            cout << "You can hear the chatter of patrons and the clinking of mugs, but your head is pounding.\n";
-            delay(3 * 1000);
-            cout << "As you sit up, a wave of nausea hits you, and you remember last night's revelry.\n";
-            delay(3 * 1000);
-            cout << "You feel dehydrated and your mouth is dry, you crave water.\n";
-            delay(3 * 1000);
-            cout << "A faint light coming through the window only intensifies your headache.\n";
-            delay(3 * 1000);
-            cout << "You get up slowly and gather your things.\n";
-            delay(1 * 1000);
-            inventory.displayPlayerInventory();
-            delay(5 * 1000);
-            cout << "You meander your way out of the room and down the stairs to the tavern.\n\n";
-            delay(2 * 1000);
-            cout << "'Rough night eh? Well, I would have a hangover too if I drank " << std::rand() % 50 + 1 << " bottles of rum as well.'\n\n";
-            delay(2 * 1000);
-        }
-        // Add more room-specific logic as needed
-    }
-}
-
+//void handleRoomEvents(Room* currentRoom,Character& player) {
+//    if (currentRoom->IsFirstVisit()) { // Check if it's the first visit
+//        if (currentRoom->GetName() == "Tavern") {
+//            cout << "You wake up in your cozy bed at the tavern, the smell of breakfast wafting through the air.\n";
+//            delay(3 * 1000);
+//            cout << "You can hear the chatter of patrons and the clinking of mugs, but your head is pounding.\n";
+//            delay(3 * 1000);
+//            cout << "As you sit up, a wave of nausea hits you, and you remember last night's revelry.\n";
+//            delay(3 * 1000);
+//            cout << "You feel dehydrated and your mouth is dry, you crave water.\n";
+//            delay(3 * 1000);
+//            cout << "A faint light coming through the window only intensifies your headache.\n";
+//            delay(3 * 1000);
+//            cout << "You get up slowly and gather your things.\n";
+//            delay(1 * 1000);
+//            inventory.displayPlayerInventory();
+//            delay(5 * 1000);
+//            cout << "You meander your way out of the room and down the stairs to the tavern.\n\n";
+//            delay(2 * 1000);
+//            cout << "'Rough night eh? Well, I would have a hangover too if I drank " << std::rand() % 50 + 1 << " bottles of rum as well.'\n\n";
+//            delay(2 * 1000);
+//		}
+//        else if (currentRoom->GetName() == "Town Center") {
+//            char tutorial;
+//            cout << "Hang on! before you leave! You may need a bit of information.\nDo you know how to fight in these lands? (y/n): ";
+//            cin >> tutorial;
+//            if (tutorial == 'n' || tutorial == 'N') {
+//                cout << "Well then! Hi there, my name is Ryder. \nI will be the friendly voice in your head that helps you out!\n";
+//                delay(3 * 1000);
+//                cout << "Don't look around like that, people are going to think you're weird\ndon't bother trying to talk either, you will just look like you are talking to yourself.\n";
+//                delay(3 * 1000);
+//                cout << "Let me teach you some things about how combat works in the world of caspira.\n";
+//                delay(3 * 1000);
+//
+//                cout << "\nChoose an action:\n";
+//                cout << "[1] Attack\n";
+//                cout << "[2] Defend\n";
+//                cout << "[3] Use Item\n";
+//                cout << "[4] Run\n\n";
+//                delay(3 * 1000);
+//
+//                cout << "This is what you will see when you enter combat, \nYou don't need to choose anything right now i am just giving you an example!\n";
+//                delay(3 * 1000);
+//                cout << "Now, [1] Attack, should be self explanatory, \nyou will attack with whatever weapon you have equipped currently.\n";
+//                delay(3 * 1000);
+//                cout << "Next, [2] Defend, you will raise your weapon or shield into a defensive position, \nyou will reduce any incoming damage to '1 damage' for that round.\n";
+//                delay(3 * 1000);
+//                cout << "Next, [3] Use Item, this will open your inventory and let you choose from a list of useable items, such as potions, \nyou then give up your turn to use that item.\n";
+//                delay(3 * 1000);
+//                cout << "Finally, [4] Run, you will try to run away from the fight. \nit is only a percentage chance you will run away and if you fail the enemy will get a free attack on you.\n";
+//                delay(3 * 1000);
+//                cout << "Now that we have gone over the basics of the system, let's get you some hands on experience!\n\n";
+//                delay(2 * 1000);
+//                cout << "A Random Goblin appears in front of you! \nIt looks angry and hungry.\n";
+//                delay(4 * 1000);
+//            }
+//
+//            else {
+//                cout << "\nWatch out!\n";
+//                cout << "Ambush!\nYou were ambushed the moment you exited the town!\n";
+//            }
+//            Enemy enemy("Goblin", 2, 10);
+//            auto inv = inventory.getInv();
+//            Combat combat(player, enemy, inv);
+//            combat.start();
+//            if (player.isAlive() == false) {
+//                cout << "Game over man! Game over!\n\n";
+//                exit(0);
+//            }
+//            else {
+//                cout << "Congratulation on your first victory!";
+//            }
+//            return;
+//        }
+//        }
+//        // Add more room-specific logic as needed
+//    }
 

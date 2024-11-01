@@ -338,7 +338,6 @@ Character Character::createCharacter() {
     cin >> continueChoice;
 
     if (continueChoice != 'n' && continueChoice != 'N') {
-        player.addGold(150);
         return player; // Return the created character
     }
     else {

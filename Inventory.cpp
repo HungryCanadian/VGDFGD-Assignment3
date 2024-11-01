@@ -295,8 +295,9 @@ void Inventory::displayBlacksmithInventory(Character& player) {
 // Display player items
 void Inventory::displayPlayerInventory() {
     cout << "\nYour items: \n";
-    for (const auto& item : inv) {
-        cout << item.getQuantity() << " x " << item.getName() << "\n";
+    for (size_t i = 0; i < inv.size(); ++i) {
+        const auto& item = inv[i];
+        cout << "[" << i + 1 << "] " << item.getName() << " x " << item.getQuantity() << "\n";
     }
 }
 
@@ -384,7 +385,7 @@ int Inventory::sellEquipItem(Character& player,int index) { // Sell items to the
             system("cls");
 
             if (again == "yes") {
-                cout << "Enter the index of the item you would like to sell:\n";
+                cout << "Enter the number of the item you would like to sell:\n";
                 int newIndex;
                 cin >> newIndex; // Get new index for the next sell
                 return sellEquipItem(player,newIndex); // Recursive call to continue selling
@@ -507,7 +508,7 @@ int Inventory::sellGeneralItem(Character& player,int index) { // Selling items t
         }
 
         // Adjust gold and inventory
-        increaseGold(player, item.getValue() * howMany);
+        player.addGold(item.getValue() * howMany);
         decreaseQuantity(item.getName(), howMany);
 
         // Check if the item is also available in the shop to increase stock
@@ -665,7 +666,7 @@ int Inventory::purchaseGeneralItem(Character& player,int index) { // Purchase it
 
         int totalCost = item.getValue() * howMany;
 
-        if (getGoldQuantity() < totalCost) {
+        if (player.getGold() < totalCost) {
             cout << "Not enough gold!\n";
             return 0;
         }
@@ -676,7 +677,7 @@ int Inventory::purchaseGeneralItem(Character& player,int index) { // Purchase it
         }
 
         // Use the Inventory functions for decreasing gold and item quantity
-        decreaseGold(player, totalCost);
+        player.subtractGold(totalCost);
         decreaseQuantity(item.getName(), howMany);
 
         // Check if the item already exists in the inventory

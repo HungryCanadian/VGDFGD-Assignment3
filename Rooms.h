@@ -11,13 +11,14 @@ class Inventory;
 
 class Room {
 public:
-	Room(string name = "Empty Room", string description = "This is an empty room.", bool locked = false, float = 0.0);
+	Room(string name = "Empty Room", string description = "This is an empty room.", bool mFirstVisit = true, float = 0.0);
 	void AddExit(Room* roomToAdd);
 	vector<Room*> GetExits();
 	int GetNumberOfExits();
 	void ListExits();
-	void HandlePlayerAction(Character& player, Inventory& inventory);
-	void DisplayRoom();
+	void HandlePlayerAction(Room* room,Character& player, Inventory& inventory);
+	void handleRoomEvents(Room* currentRoom, Character& player, Inventory inventory);
+	void DisplayRoom(Character& player, Inventory& inventory);
 	string GetName();
 	bool IsFirstVisit();
 	Room* ChooseExit();
@@ -38,7 +39,6 @@ private:
 
 
 	//Extra detail --> impliment if time allows, but not REQUIRED
-	bool mLocked;
 	bool mFirstVisit;
 
 };
