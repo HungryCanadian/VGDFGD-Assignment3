@@ -135,6 +135,7 @@
     <ClCompile Include="Equipment.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Item.cpp" />
+    <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Race.cpp" />
     <ClCompile Include="Rooms.cpp" />
     <ClCompile Include="VGDFGDAssignment3.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="Equipment.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="NPC.h" />
     <ClInclude Include="Race.h" />
     <ClInclude Include="Rooms.h" />
   </ItemGroup>

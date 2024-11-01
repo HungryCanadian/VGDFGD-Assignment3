@@ -59,6 +59,7 @@ public:
 	void addDamageReduction(int amount);
     void removeDamageReduction(int amount);
 	int getGold();
+    void setHealth(int health);
 	int addGold(int amount);
 	int subtractGold(int amount);
     int heal(int amount);

@@ -105,7 +105,11 @@ int Character::heal(int amount) {
     if (mHealth > mMaxHealth) {
         mHealth = mMaxHealth;
     }
+	cout << "You are now at " << mHealth << " health!\n";
     return mHealth;
+}
+void Character::setHealth(int health) {
+	mHealth = health;
 }
 
 int Character::getAttack() const {
