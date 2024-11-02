@@ -26,4 +26,6 @@ private:
 	//void handlePlayerAction(int choice); // does the player want to heal or attack?
 	void enemyTurn(); // runs the enemies turn
 	void useItem(); //handles all items being used.
+	void SpecialMove(); //handles all special moves
+	void ClassAbility(); //handles all class abilities
 };

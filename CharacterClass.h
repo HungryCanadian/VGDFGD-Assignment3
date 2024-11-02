@@ -9,6 +9,9 @@ struct CharacterClass {
     string name;
     int defaultHealth;
 
+    string getName();
+
+
 
     // Constructor
     CharacterClass(const string& className, int health);

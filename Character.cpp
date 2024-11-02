@@ -97,6 +97,10 @@ int Character::getHealth() {
     return mHealth;
 }
 
+CharacterClass Character::getClass() const {
+    return mType;
+}
+
 int Character::getMaxHealth() {
     return mMaxHealth;
 }

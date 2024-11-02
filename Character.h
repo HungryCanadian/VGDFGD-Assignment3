@@ -64,6 +64,7 @@ public:
 	int addGold(int amount);
 	int subtractGold(int amount);
     int heal(int amount);
+	CharacterClass getClass() const;
     //void toggleEquip(Gear& gear);
     int getAttack() const;
     void displayStats() const;
