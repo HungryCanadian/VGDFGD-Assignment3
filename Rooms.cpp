@@ -232,7 +232,7 @@ void Room::DisplayRoom(Character& player, Inventory& inventory) {
             delay(3 * 1000);
             cout << "each housing a stone sarcophagus that tells the story of those interred within—wealthy merchants,\n";
             delay(3 * 1000);
-            cout << "valiant heroes, and wise leaders—each engraved with symbols of their deeds and legacies. Cobwebs\n\n";
+            cout << "valiant heroes, and wise leaders—each engraved with symbols of their deeds and legacies. Cobwebs\n";
             delay(3 * 1000);
             cout << "drape like tattered banners over these resting places, whispering of the memories that linger in this\n";
             delay(3 * 1000);
@@ -560,7 +560,7 @@ void Room::HandlePlayerAction(Room* room, Character& player, Inventory& inventor
                         cout << "\nThe sailors like to spread some rumours if you head to the docks keep your ears open. \nYou might hear something interesting!\n";
                     }
                     else if (npcName == "Guard Nolan") {
-                        cout << "\nBarbossa was sure in a rush, can you make sure he is safe out there?\nThe forests aren't that safe so make sure to take care of yourself first and foremost.\n";
+                        cout << "\nThe forests aren't that safe so make sure to take care of yourself first and foremost.\n";
                     }
                     else if (npcName == "Guard Weston") {
                         cout << "\nThe Wild creatures get more and more dense as you get closer to the Hall of Ancestors.\n";
@@ -650,7 +650,7 @@ Room* Room::createTown() {
     NPC* blacksmith2 = new NPC("Blacksmith", "I can forge you something special if you bring me the right materials.");
     NPC* kenzie = new NPC("Mckenzie", "The festival is just around the corner, you should check it out!");
     NPC* guardeast = new NPC("Guard Earl", "Stay out of trouble, or you'll find yourself in the brig!");
-    NPC* guardnorth = new NPC("Guard Nolan", "Barbossa was sure in a rush, can you make sure he is safe out there?\nThe forest's aren't that safe so make sure to take care of yourself first and foremost.");
+    NPC* guardnorth = new NPC("Guard Nolan", "Barbossa was sure in a rush, can you make sure he is safe out there?\n");
     NPC* guardwest = new NPC("Guard Winston", "I've heard rumors of strange creatures lurking in the woods.");
     NPC* shopkeep = new NPC("Shopkeeper", "Limited stock! buy while you can!");
     

@@ -91,10 +91,12 @@ void Combat::useItem() {
 	cout << "Choose an item to use:\n";
 
 	vector<Item*> consumableItems;
+	int index = 1;
 	for (auto& item : inventory2) {
 		if (item.isUsable() && item.getQuantity() > 0) {
 			consumableItems.push_back(&item); // add consumable item to a list
-			cout << " - " << item.getName() << " ( x " << item.getQuantity() << ")\n";
+			cout << "["<< index << "]" << item.getName() << " (x " << item.getQuantity() << ")\n";
+			index++;
 		}
 	}
 	if (consumableItems.empty()) {
