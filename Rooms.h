@@ -42,8 +42,3 @@ private:
 
 };
 
-
-
-//vector of Entities
-//Vector of Doors/exits
-//some kind of lock (boolean)

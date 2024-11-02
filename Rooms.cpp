@@ -79,13 +79,14 @@ void Room::DisplayRoom(Character& player, Inventory& inventory) {
             cout << "A faint light coming through the window only intensifies your headache.\n";
             delay(3 * 1000);
             cout << "You get up slowly and gather your things.\n";
-            delay(1 * 1000);
+            delay(3 * 1000);
             inventory.displayPlayerInventory();
             delay(5 * 1000);
             cout << "You meander your way out of the room and down the stairs to the tavern.\n\n";
-            delay(2 * 1000);
-            cout << "'Rough night eh? Well, I would have a hangover too if I drank " << std::rand() % 50 + 1 << " bottles of rum as well.'\n\n";
-            delay(2 * 1000);
+            delay(3 * 1000);
+            cout << "Barbossa says: Fun night? Well, I would have a hangover too if I drank " << std::rand() % 50 + 1 << " bottles of rum.\nHowever, thank you for your patronage, i greatly appreciate it!\n";
+            delay(3 * 1000);
+			cout << "I do have to run out and do a few errands real quick, but if you need anything. Varun here, at the bar, can set you up!\n\n";
         }
         else if (GetName() == "Town Center") {
             char tutorial;
@@ -143,28 +144,10 @@ void Room::DisplayRoom(Character& player, Inventory& inventory) {
                 delay(3 * 1000);
                 cout << "and celebrations are held, bringing everyone together in joyous unity. With its vibrant energy and\n";
                 delay(3 * 1000);
-                cout << "rich tapestry of life, the Town Center embodies the spirit of Caspira—a place where connections are\n";
+                cout << "rich tapestry of life, the Town Center embodies the spirit of Caspira, a place where connections are\n";
                 delay(3 * 1000);
                 cout << "forged and memories are made.\n\n";
 			}
-            //else {
-            //    cout << "\nWatch out!\n";
-            //    cout << "Ambush!\nYou were ambushed the moment you exited the town!\n";
-            //}
-
-            //Enemy enemy("Goblin", 2, 10);
-            //auto inv = inventory.getInv();
-            //Combat combat(player, enemy, inv);
-            //combat.start();
-
-            //if (!player.isAlive()) {
-            //    cout << "Game over man! Game over!\n\n";
-            //    exit(0);
-            //}
-            //else {
-            //    cout << "Congratulations on your first victory!";
-            //}
-            //return; // Exit if combat was initiated
         }
         else if (GetName() == "West Road") {
 			cout << "The road begins at the edge of the quaint wooden town, where the last remnants of civilization fade\n";
@@ -427,14 +410,6 @@ void Room::DisplayRoom(Character& player, Inventory& inventory) {
 
     
 
-//void delay(int milliseconds) {
-//    if (!skipDelays) {
-//        clock_t goal = milliseconds + clock();
-//        while (goal > clock());
-//
-//    }
-//}
-
 bool Room::IsFirstVisit() {
     if (mFirstVisit) {
         mFirstVisit = false; // Set to false after first visit
@@ -442,12 +417,6 @@ bool Room::IsFirstVisit() {
     }
     return false; // Indicate this is not the first visit
 }
-
-//void Room::InteractWithNPCs() {
-//    for (const auto& npc : mNPCs) {
-//        npc->Talk();
-//    }
-//}
 
  
 
@@ -492,18 +461,8 @@ void Room::HandleAttack(Character& player, Inventory& inventory) {
 void Room::HandlePlayerAction(Room* room, Character& player, Inventory& inventory) {
     // Store the current room for reference
     // Check for specific room interactions first
-
-    if (GetName() == "General Store") {
-        inventory.runGeneralStore(player);
-        return; // Exit this method after handling store logic
-    }
-
-    if (GetName() == "Blacksmith") {
-        inventory.runBlacksmith(player);
-        return; // Exit this method after handling store logic
-    }
-
-    // Check for attack chance immediately upon entering the room
+    // if none, then check if random encounter procs
+    // THEN run room code.
     if (static_cast<float>(rand()) / RAND_MAX < mAttackChance) {
         cout << "You have been attacked!\n";
         HandleAttack(player, inventory); // Call combat here
@@ -517,7 +476,7 @@ void Room::HandlePlayerAction(Room* room, Character& player, Inventory& inventor
         cout << "[1] Open Inventory\n";
         cout << "[2] Move to another room\n";
         cout << "[3] Check room description\n";
-        cout << "[4] Investigate your Surroundings\n";
+        cout << "[4] Talk to someone\n";
         cout << "[0] Quit Game!\n";
         int choice;
         cin >> choice;
@@ -560,7 +519,8 @@ void Room::HandlePlayerAction(Room* room, Character& player, Inventory& inventor
 
                     // Check the NPC's name for special actions
                     if (npcName == "Bartender") {
-                        cout << "The Bartender is full of life.\n";
+                        cout << "Dang, Barbossa was sure in a hurry today! anyways!";
+                        cout << "\nThe name is Varun, what can I do for ya?\n";
                         string rest;
                         cout << "Would you like to rest for the night? (y/n): ";
                         cin >> rest;
@@ -572,25 +532,60 @@ void Room::HandlePlayerAction(Room* room, Character& player, Inventory& inventor
                             cout << "You have been fully healed!\n";
                         }
                         else {
-                            cout << "Well enjoy your day then!\n";
+                            cout << "Well enjoy your day then, oh and before you leave.\nCan you keep an eye out for Barbossa? he is the tavern owner and he left here in a real hurry earlier.\nI think he headed north\n";
                         }
                     }
                     else if (npcName == "Barbossa") {
-                        cout << "\n Barbosa says: I am going to have to teach you what happens to people who poke around where they are unwanted\n";
+                        cout << "\nBarbossa says: I am going to have to teach you what happens to people who poke around where they are unwanted\n";
                         Enemy enemy("Barbossa", 5, 150, 100, 1000);
                         Combat combat(player, enemy, inventory.getInv());
                         combat.start();
-						if (!player.isAlive()) {
-							cout << "Game over, man! Game over!\n\n";
-							exit(0); // Exit the game if the player is dead
-						}
-						else {
+                        if (!player.isAlive()) {
+                            cout << "Game over, man! Game over!\n\n";
+                            exit(0); // Exit the game if the player is dead
+                        }
+                        else {
                             player.displayVictoryScreen();
-						}
+                        }
                     }
-                    else if (npcName == "Wise Old Man") {
-                        cout << "The wise old man shares a piece of advice.\n";
-                        // Additional logic for interacting with the wise old man
+                    else if (npcName == "Shopkeeper") {
+                        cout << "I have some wares if you have the coin.\nJust please don't judge the state of my stock, we haven't had a shipment of supplies in some time.\n\n";
+                        inventory.runGeneralStore(player);
+                    }
+                    else if (npcName == "Blacksmith") {
+                        cout << "\nBarbossa kept saying he would get us supplies, we have yet to receive anything..\n\n";
+                        inventory.runBlacksmith(player);
+                    }
+                    else if (npcName == "Guard Earl") {
+                        cout << "\nThe sailors like to spread some rumours if you head to the docks keep your ears open. \nYou might hear something interesting!\n";
+                    }
+                    else if (npcName == "Guard Nolan") {
+                        cout << "\nBarbossa was sure in a rush, can you make sure he is safe out there?\nThe forests aren't that safe so make sure to take care of yourself first and foremost.\n";
+                    }
+                    else if (npcName == "Guard Weston") {
+                        cout << "\nThe Wild creatures get more and more dense as you get closer to the Hall of Ancestors.\n";
+                    }
+                    else if (npcName == "Young Priest") {
+                        cout << "\nThe name is Heather, what can I do for ya?\n";
+                        string heal;
+                        cout << "Would you like some healing?(y/n): ";
+                        cin >> heal;
+                        if (heal == "y" || heal == "Y") {
+                            player.setHealth(player.getMaxHealth());
+                            cout << "You are now at " << player.getHealth() << " health.\n";
+                            cout << "You have been fully healed!\n";
+                        }
+                    }
+                    else if (npcName == "Old Priest") {
+                        cout << "\nThe name is Brendan, what can I do for ya?\n";
+                        string heal;
+                        cout << "Would you like some healing?(y/n): ";
+                        cin >> heal;
+                        if (heal == "y" || heal == "Y") {
+                            player.setHealth(player.getMaxHealth());
+                            cout << "You are now at " << player.getHealth() << " health.\n";
+                            cout << "You have been fully healed!\n";
+                        }
                     }
                     else {
                         cout << "You have a casual conversation with " << npcName << ".\n";
@@ -655,7 +650,7 @@ Room* Room::createTown() {
     NPC* blacksmith2 = new NPC("Blacksmith", "I can forge you something special if you bring me the right materials.");
     NPC* kenzie = new NPC("Mckenzie", "The festival is just around the corner, you should check it out!");
     NPC* guardeast = new NPC("Guard Earl", "Stay out of trouble, or you'll find yourself in the brig!");
-    NPC* guardnorth = new NPC("Guard Noah", "The Forest's are dangerous; make sure you're prepared for your journey.");
+    NPC* guardnorth = new NPC("Guard Nolan", "Barbossa was sure in a rush, can you make sure he is safe out there?\nThe forest's aren't that safe so make sure to take care of yourself first and foremost.");
     NPC* guardwest = new NPC("Guard Winston", "I've heard rumors of strange creatures lurking in the woods.");
     NPC* shopkeep = new NPC("Shopkeeper", "Limited stock! buy while you can!");
     
@@ -663,20 +658,21 @@ Room* Room::createTown() {
     NPC* merchant = new NPC("Merchant", "Welcome! I have the finest goods in town.");
     NPC* villager1 = new NPC("Villager", "Did you hear about the mysterious traveler?");
     NPC* villager2 = new NPC("Old Man", "In my day, we sailed out and sank our problems.");
-    NPC* healer = new NPC("Healer", "If you're hurt, I can help you heal for a price.");
+    NPC* healer = new NPC("Old Priest", "Please tell me you actually need healing? and your head is screwed on properly?");
+    NPC* healer2 = new NPC("Young Priest", "Did you see that Doctor's chair spinning around constantly? he kept saying he needed us for something.");
     NPC* child = new NPC("Child", "I saw a dragon in my dreams last night!");
 	NPC* bard = new NPC("Bard", "I'll sing you a song for a few coins.");
 	NPC* farmer = new NPC("Farmer", "The harvest is looking good this year.");
 
    //Hall of Ancestors NPCs
-   NPC* dani = new NPC("Dani", "Are you insane?! Why are you all the way out here?.");
+   NPC* dani = new NPC("GhostDani", "Are you insane?! Why are you all the way out here?.");
 
    //Dockyard NPCs
    NPC* dockworker = new NPC("Dockworker", "Busy day today! So many ships coming in and out.");
    NPC* fisherman = new NPC("Fisherman", "The catch is good today, but the storm last night was fierce.");
    NPC* sailor = new NPC("Sailor", "If you're looking for adventure, the sea is calling!");
-   NPC* captain = new NPC("Captain", "That tavernkeeper is oddly interested in our departure time.");
-   NPC* shipwright = new NPC("Shipwright", "that tavernkeeper promised me some Heartwood, but it never showed up.");
+   NPC* captain = new NPC("Captain", "Barbossa is oddly interested in our departure time.");
+   NPC* shipwright = new NPC("Shipwright", "Barbossa promised me some Heartwood, but it never showed up.");
 
 	//Lumberyard NPCs
 	NPC* lumberjack = new NPC("Lumberjack", "Hard work, but it pays the bills.");
@@ -686,6 +682,15 @@ Room* Room::createTown() {
     //HeartwoodGrove boss
 	NPC* barbossa = new NPC("Barbossa", "You couldn't just leave well enough alone huh? you HAD to figure out the problem with the shipments?.");
 	
+	//Ryder (meta NPC)
+	NPC* ryder1 = new NPC("Ryder", "I wouldn't go this way first. may want to go level up a bit!");
+    NPC* ryder2 = new NPC("Ryder", "Hey! make sure you talk to everyone, sometimes people have interesting information!");
+    NPC* ryder3 = new NPC("Ryder", "I wouldn't worry about Dani there. she is mostly harmless...\nShe can still tickle you though!");
+    NPC* ryder4 = new NPC("Ryder", "If this isn't your first time around here, you may want to head to the Graveyard and Halls of the Ancestors\nThere is quite a few wild monsters out that way that will help you train.\nDon't forget to head back and talk to the Bartender he will help you rest and recover from injuries.");
+    NPC* ryder5 = new NPC("Ryder", "Ahh yes, a Logical choice, if ships are missing lets go see what other sailors have to say about that!");
+    NPC* ryder6 = new NPC("Ryder", "make sure you talk to everyone before heading back to town. there should also be a Healer around here somewhere.");
+
+
 
 	// Add NPCs to rooms
 	tavern->AddNPC(bartender);
@@ -694,20 +699,34 @@ Room* Room::createTown() {
 
 	blacksmith->AddNPC(blacksmith2);
 
+	roadNorth->AddNPC(guardnorth);
+	roadNorth->AddNPC(ryder1);
+
+	roadWest->AddNPC(guardwest);
+	roadWest->AddNPC(ryder4);
+
+	roadEast->AddNPC(guardeast);
+	roadEast->AddNPC(ryder5);
+
 	townCenter->AddNPC(kenzie);
 	townCenter->AddNPC(villager1);
 	townCenter->AddNPC(villager2);
 	townCenter->AddNPC(child);
 	townCenter->AddNPC(bard);
 	townCenter->AddNPC(farmer);
+	townCenter->AddNPC(ryder2);
 
 	crypt->AddNPC(dani);
+	crypt->AddNPC(ryder3);
 
 	docks->AddNPC(dockworker);
 	docks->AddNPC(fisherman);
 	docks->AddNPC(sailor);
 	docks->AddNPC(captain);
 	docks->AddNPC(shipwright);
+	docks->AddNPC(ryder6);
+	docks->AddNPC(healer);
+	docks->AddNPC(healer2);
 
 	heartwood->AddNPC(barbossa);
 

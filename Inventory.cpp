@@ -31,7 +31,7 @@ static vector<Gear> equipment = {
     { "shield", Effect(0,0,0,1), 1, 25, false, ItemType::Gear, false },
     { "crossbow", Effect(0,2,0), 1, 20, false, ItemType::Weapon, false },
 	{ "armor", Effect(0,0,0,2), 1, 100, false, ItemType::Gear, false },
-	/*{ "helmet", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
+	/*{ "helmet", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false }, //more gear for later implementation *needs a check to make sure you dont become a tank*
 	{ "boots", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
 	{ "gloves", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
 	{ "ring", Effect(0,0,0,1), 1, 10, false, ItemType::Gear, false },
